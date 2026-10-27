@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pro Make Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Promake Studio is an end-to-end design studio. We are weird and mad so you can look good.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html,body{margin:0}
+/* Layout: hard-edged 12-column grid with visible 2px rules. Ornament comes from Promake's own profile: stacked circles, half circles and the three vertical bars. Black and white carry everything; orange is the one loud shape in each block. Five views, switched by the URL hash. */
+:root {
+  --bg: #ffffff;
+  --fg: #0b0b0b;
+  --muted: #6d6e71;
+  --line: #0b0b0b;
+  --soft: #e3e3e3;
+  --accent: #ff5a1f;
+  --tile: #f2f2f2;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --max: 1280px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0b0b0b; --fg: #f6f6f6; --muted: #9a9b9e; --line: #f6f6f6; --soft: #2a2a2a; --accent: #ff6a33; --tile: #171717; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0b0b0b; --fg: #f6f6f6; --muted: #9a9b9e; --line: #f6f6f6; --soft: #2a2a2a; --accent: #ff6a33; --tile: #171717; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+@media (max-width: 480px) { .wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); } }
+
+.label { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.sq { display: inline-block; width: .6em; height: .6em; background: var(--accent); flex: none; }
+.bars { display: inline-flex; gap: 4px; height: 1em; }
+.bars i { width: 4px; background: currentColor; }
+
+/* Logo swap: black on light, white on dark; reversed inside .invert */
+.brand-logo { display: block; height: 100%; width: auto; }
+.brand-logo.w { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand-logo.b { display: none; } :root:not([data-theme="light"]) .brand-logo.w { display: block; } }
+:root[data-theme="dark"] .brand-logo.b { display: none; }
+:root[data-theme="dark"] .brand-logo.w { display: block; }
+.invert .brand-logo.b { display: none; }
+.invert .brand-logo.w { display: block; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .invert .brand-logo.b { display: block; } :root:not([data-theme="light"]) .invert .brand-logo.w { display: none; } }
+:root[data-theme="dark"] .invert .brand-logo.b { display: block; }
+:root[data-theme="dark"] .invert .brand-logo.w { display: none; }
+
+/* Header */
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 2px solid var(--line); }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 12px; }
+.logo { display: block; height: 34px; flex: none; }
+.tabs { display: flex; gap: 0; margin: 0; padding: 0; list-style: none; border-left: 2px solid var(--line); }
+.tabs a { display: block; padding: 8px 16px; text-decoration: none; font-weight: 600; font-size: 15px; border-right: 2px solid var(--line); }
+.tabs a:hover { color: var(--accent); }
+.tabs a[aria-current="page"] { background: var(--fg); color: var(--bg); }
+.menu-btn { display: none; background: none; border: 2px solid var(--line); padding: 8px 12px; font-weight: 600; cursor: pointer; }
+@media (max-width: 900px) {
+  .nav { flex-wrap: wrap; }
+  .menu-btn { display: block; }
+  .tabs { order: 3; width: 100%; flex-direction: column; border-left: 0; border-top: 2px solid var(--line); display: none; }
+  .tabs.open { display: flex; }
+  .tabs a { border-right: 0; border-bottom: 1px solid var(--soft); padding: 14px 0; }
+  .tabs a[aria-current="page"] { background: none; color: var(--accent); }
+  .nav > .btn { display: none; }
+  .logo { height: 28px; }
+}
+
+.btn { display: inline-flex; align-items: center; gap: 12px; font-family: var(--body); font-weight: 600; font-size: 15px; text-decoration: none; padding: 13px 20px; border: 2px solid var(--fg); background: var(--fg); color: var(--bg); cursor: pointer; transition: background .12s, color .12s, transform .12s, box-shadow .12s; white-space: nowrap; }
+.btn:hover { background: var(--accent); color: #0b0b0b; transform: translate(-3px, -3px); box-shadow: 3px 3px 0 var(--fg); }
+.btn.ghost { background: transparent; color: var(--fg); }
+.btn.sm { padding: 8px 14px; font-size: 14px; }
+
+/* Views */
+.view[hidden] { display: none !important; }
+section { border-bottom: 2px solid var(--line); }
+.sec { padding-block: clamp(56px, 8vw, 104px); }
+.sec-head { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; margin-bottom: clamp(32px, 5vw, 56px); align-items: end; }
+.sec-head .label { grid-column: 1 / span 3; display: flex; align-items: center; gap: 10px; }
+.sec-head h2 { grid-column: 4 / -1; margin: 0; font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: clamp(32px, 4.8vw, 64px); line-height: .98; letter-spacing: -.03em; text-wrap: balance; max-width: 18ch; }
+.sec-head p { grid-column: 4 / span 7; margin: 0; color: var(--muted); max-width: 60ch; }
+@media (max-width: 760px) { .sec-head .label, .sec-head h2, .sec-head p { grid-column: 1 / -1; } }
+
+.page-hero { padding-block: clamp(56px, 8vw, 104px) clamp(40px, 5vw, 64px); display: grid; gap: 24px; }
+.page-hero h1 { margin: 0; font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: clamp(44px, 7vw, 100px); line-height: .92; letter-spacing: -.04em; text-wrap: balance; max-width: 15ch; }
+.page-hero h1 .hl { background: var(--accent); color: #0b0b0b; padding: 0 .08em; }
+.page-hero p { margin: 0; font-size: clamp(18px, 1.6vw, 21px); max-width: 52ch; }
+
+/* Home hero */
+.hero { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-block: clamp(48px, 8vw, 104px); align-items: center; }
+.hero-text { grid-column: 1 / span 7; min-width: 0; display: grid; gap: 28px; }
+.hero h1 { font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: clamp(48px, 7.6vw, 112px); line-height: .9; letter-spacing: -.04em; margin: 0; text-wrap: balance; }
+.hero h1 .hl { background: var(--accent); color: #0b0b0b; padding: 0 .08em; }
+.hero h1 .ol { color: transparent; -webkit-text-stroke: 2px var(--fg); }
+.hero p { margin: 0; font-size: clamp(18px, 1.6vw, 21px); max-width: 42ch; }
+.actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.totem { grid-column: 9 / -1; position: relative; aspect-ratio: 4 / 5; max-width: 100%; border: 2px solid var(--line); overflow: hidden; background: var(--bg); }
+.totem i { position: absolute; display: block; transition: transform .6s cubic-bezier(.3,1.5,.5,1); }
+.totem .t1 { width: 16%; aspect-ratio: 1; left: 42%; top: 9%; border-radius: 50%; background: var(--soft); }
+.totem .t2 { width: 28%; aspect-ratio: 1; left: 36%; top: 21%; border-radius: 50%; background: var(--fg); }
+.totem .t3 { width: 46%; aspect-ratio: 1; left: 27%; top: 39%; border-radius: 50%; background: var(--accent); }
+.totem .t4 { width: 90%; aspect-ratio: 2 / 1; left: 5%; bottom: -1px; border-radius: 999px 999px 0 0; background: var(--fg); }
+.totem .t5 { left: 14%; bottom: 0; width: 22%; height: 42%; background: repeating-linear-gradient(90deg, var(--bg) 0 18%, transparent 18% 41%); }
+.totem .t6 { right: 8%; top: 0; width: 14%; height: 24%; background: repeating-linear-gradient(90deg, var(--fg) 0 22%, transparent 22% 39%); }
+.totem:hover .t1 { transform: translateY(-14px); }
+.totem:hover .t2 { transform: translateX(26px) rotate(20deg); }
+.totem:hover .t3 { transform: translateX(-18px) scale(1.06); }
+.totem:hover .t6 { transform: translateY(20px); }
+@media (max-width: 860px) { .hero-text, .totem { grid-column: 1 / -1; } .totem { max-width: 380px; } }
+
+.strip { border-block: 2px solid var(--line); overflow: hidden; background: var(--fg); color: var(--bg); }
+.strip-track { display: flex; gap: 36px; padding-block: 16px; width: max-content; animation: slide 36s linear infinite; font-family: var(--display); font-weight: 800; font-stretch: 115%; font-size: 22px; text-transform: uppercase; align-items: center; }
+.strip-track .s { width: 14px; height: 14px; background: var(--accent); }
+.strip-track .c { width: 14px; height: 14px; background: var(--bg); border-radius: 50%; }
+@keyframes slide { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .strip-track { animation: none; } html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* Grids with shared rules */
+.ruled { display: grid; border-top: 2px solid var(--line); border-left: 2px solid var(--line); }
+.ruled > * { border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); min-width: 0; }
+
+/* Featured work tiles */
+.feat { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.feat button { all: unset; cursor: pointer; display: grid; grid-template-rows: auto 1fr; }
+.feat button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.feat .img { aspect-ratio: 4 / 3; overflow: hidden; border-bottom: 2px solid var(--line); background: var(--tile); }
+.feat img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.feat button:hover img { transform: scale(1.04); }
+.feat .cap { padding: 18px 20px; display: grid; gap: 4px; }
+.feat .cap b { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -.015em; }
+.feat button:hover .cap { background: var(--accent); color: #0b0b0b; }
+.feat button:hover .cap .label { color: #0b0b0b; }
+@media (max-width: 860px) { .feat { grid-template-columns: 1fr; } }
+
+/* Client wall */
+.wall { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.wall div { aspect-ratio: 5 / 4; display: grid; place-items: center; padding: 6px; background: #fff; }
+.wall img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; filter: grayscale(1) contrast(1.1); transition: filter .2s; }
+.wall div:hover img { filter: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .wall div { background: #0b0b0b; } :root:not([data-theme="light"]) .wall img { filter: grayscale(1) invert(1); mix-blend-mode: screen; } }
+:root[data-theme="dark"] .wall div { background: #0b0b0b; }
+:root[data-theme="dark"] .wall img { filter: grayscale(1) invert(1); mix-blend-mode: screen; }
+@media (max-width: 960px) { .wall { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .wall { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Belief split on home */
+.split { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+.split .big { grid-column: 1 / span 7; margin: 0; font-family: var(--display); font-weight: 700; font-stretch: 108%; font-size: clamp(26px, 3.2vw, 42px); line-height: 1.12; letter-spacing: -.02em; text-wrap: balance; }
+.split .big span { color: var(--accent); }
+.split .side { grid-column: 9 / -1; display: grid; gap: 18px; align-content: end; }
+.split .side p { margin: 0; color: var(--muted); }
+@media (max-width: 860px) { .split .big, .split .side { grid-column: 1 / -1; } }
+
+/* Work index */
+.index { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--line); }
+.index button { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1.2fr) 32px; gap: 20px; align-items: center; padding-block: 18px; border-bottom: 2px solid var(--line); transition: background .12s, padding .2s; }
+.index button:hover, .index button:focus-visible { background: var(--accent); color: #0b0b0b; padding-inline: 12px; }
+.index button:hover .label, .index button:hover .i-q { color: #0b0b0b; }
+.i-name { font-family: var(--display); font-weight: 700; font-stretch: 110%; font-size: clamp(22px, 3vw, 38px); letter-spacing: -.025em; line-height: 1.05; }
+.i-q { color: var(--muted); font-size: 15px; }
+.i-arrow { font-size: 20px; justify-self: end; }
+@media (max-width: 760px) { .index button { grid-template-columns: 36px minmax(0, 1fr) 20px; } .i-q { display: none; } }
+
+/* Story */
+.story { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-block: clamp(56px, 8vw, 104px); scroll-margin-top: 70px; }
+.story-side { grid-column: 1 / span 4; min-width: 0; }
+.story-side .sticky { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 18px; }
+.story-side h2 { margin: 0; font-family: var(--display); font-weight: 900; font-stretch: 118%; font-size: clamp(34px, 4vw, 56px); line-height: .95; letter-spacing: -.035em; }
+.meta { display: grid; grid-template-columns: auto 1fr; margin: 0; font-size: 15px; border-top: 2px solid var(--line); }
+.meta dt, .meta dd { padding-block: 10px; border-bottom: 1px solid var(--soft); margin: 0; }
+.meta dt { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-right: 16px; }
+.story-main { grid-column: 6 / -1; display: grid; gap: clamp(40px, 5vw, 64px); min-width: 0; }
+@media (max-width: 860px) { .story-side, .story-main { grid-column: 1 / -1; } .story-side .sticky { position: static; } }
+.shot { border: 2px solid var(--line); background: var(--tile); overflow: hidden; }
+.shot img { width: 100%; height: auto; }
+.shots { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 560px) { .shots { grid-template-columns: 1fr; } }
+.chapter { display: grid; gap: 14px; }
+.chapter h3 { margin: 0; display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.chapter h3::before { content: ""; width: 12px; height: 12px; background: var(--accent); }
+.chapter p { margin: 0; max-width: 62ch; }
+.chapter .lead { font-family: var(--display); font-weight: 600; font-size: clamp(21px, 2.2vw, 28px); line-height: 1.28; letter-spacing: -.015em; text-wrap: pretty; }
+.anatomy { list-style: none; margin: 4px 0 0; padding: 0; border-top: 2px solid var(--line); }
+.anatomy li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; padding-block: 13px; border-bottom: 1px solid var(--soft); }
+.anatomy b { font-weight: 600; }
+.anatomy span { color: var(--muted); }
+@media (max-width: 520px) { .anatomy li { grid-template-columns: 1fr; gap: 2px; } }
+.swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.swatch { display: grid; align-content: start; }
+.chip { aspect-ratio: 2 / 1; border-bottom: 2px solid var(--line); }
+.swatch .txt { padding: 12px 14px; display: grid; gap: 2px; }
+.swatch b { font-weight: 600; }
+.swatch code { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.swatch p { font-size: 15px; color: var(--muted); margin: 4px 0 0; }
+@media (max-width: 560px) { .swatches { grid-template-columns: 1fr; } }
+
+/* Studio */
+.beliefs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.belief { padding: 28px 24px; display: grid; gap: 14px; align-content: start; }
+.belief .shape { width: 44px; height: 44px; background: var(--fg); }
+.belief:nth-child(2) .shape { background: var(--accent); border-radius: 50%; }
+.belief:nth-child(3) .shape { clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+.belief h3 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: -.015em; line-height: 1.1; }
+.belief p { margin: 0; color: var(--muted); }
+@media (max-width: 860px) { .beliefs { grid-template-columns: 1fr; } }
+.steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.step { padding: 26px 22px; display: grid; gap: 10px; align-content: start; }
+.step .n { font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: 64px; line-height: 1; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 2px var(--fg); }
+.step:nth-child(3) .n { color: var(--accent); -webkit-text-stroke: 0; }
+.step h3 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -.015em; }
+.step p { margin: 0; color: var(--muted); font-size: 16px; }
+.step ul { margin: 4px 0 0; padding: 0; list-style: none; font-size: 15px; display: grid; gap: 4px; }
+.step li::before { content: "■ "; color: var(--accent); font-size: 10px; vertical-align: 2px; }
+@media (max-width: 960px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .steps { grid-template-columns: 1fr; } }
+.services { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.svc { padding: 24px; display: grid; gap: 12px; align-content: start; transition: background .12s; }
+.svc:hover { background: var(--accent); color: #0b0b0b; }
+.svc:hover p, .svc:hover li { color: #0b0b0b; }
+.svc:hover .ico { background: #0b0b0b; }
+.ico { width: 34px; height: 34px; background: var(--fg); }
+.ico.c { border-radius: 50%; }
+.ico.t { clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+.ico.h { clip-path: circle(100% at 0 100%); }
+.ico.d { clip-path: polygon(0 0, 100% 0, 0 100%); }
+.ico.p { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+.svc h3 { margin: 6px 0 0; font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: -.015em; line-height: 1.1; }
+.svc p { margin: 0; color: var(--muted); font-size: 15px; }
+.svc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; font-size: 15px; }
+.svc li { color: var(--muted); }
+@media (max-width: 960px) { .services { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .services { grid-template-columns: 1fr; } }
+.quote { margin: 0; padding-block: clamp(48px, 7vw, 88px); display: grid; gap: 14px; }
+.quote p { margin: 0; font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: clamp(28px, 4vw, 52px); line-height: 1.04; letter-spacing: -.03em; max-width: 22ch; text-wrap: balance; }
+
+/* Playground */
+.play { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 32px; align-items: start; }
+.stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); display: grid; gap: 14px; }
+.poster { --pbg: #ffffff; --pfg: #0b0b0b; --pac: #ff5a1f; --m: 8%; --hs: 15; aspect-ratio: 4 / 5; max-width: 100%; width: 100%; border: 2px solid var(--line); background: var(--pbg); color: var(--pfg); position: relative; overflow: hidden; container-type: inline-size; }
+.poster svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.poster .ptext { position: absolute; inset: var(--m); display: flex; flex-direction: column; justify-content: flex-end; gap: 2cqw; }
+.poster .ph1 { margin: 0; font-size: calc(var(--hs) * 0.5cqw); line-height: .92; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.poster .psub { margin: 0; font-family: var(--mono); font-size: 2.6cqw; letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+.poster[data-align="center"] .ptext { align-items: center; text-align: center; justify-content: center; }
+.poster[data-align="left"] .ptext { align-items: flex-start; text-align: left; }
+.poster[data-align="thirds"] .ptext { align-items: flex-start; text-align: left; justify-content: flex-start; padding-top: 58%; }
+.poster[data-font="grotesk"] .ph1 { font-family: var(--display); font-weight: 900; font-stretch: 118%; text-transform: uppercase; }
+.poster[data-font="humanist"] .ph1 { font-family: var(--body); font-weight: 700; letter-spacing: -.02em; }
+.poster[data-font="mono"] .ph1 { font-family: var(--mono); font-weight: 500; letter-spacing: -.04em; }
+.poster[data-font="condensed"] .ph1 { font-family: var(--display); font-weight: 800; font-stretch: 62%; text-transform: uppercase; letter-spacing: 0; }
+.poster.grid-on::after { content: ""; position: absolute; inset: var(--m); background-image: linear-gradient(90deg, color-mix(in srgb, var(--pac) 45%, transparent) 1px, transparent 1px), linear-gradient(color-mix(in srgb, var(--pac) 45%, transparent) 1px, transparent 1px); background-size: calc(100% / 3) calc(100% / 3); border-right: 1px solid color-mix(in srgb, var(--pac) 45%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--pac) 45%, transparent); pointer-events: none; }
+.stage .row { display: flex; gap: 10px; flex-wrap: wrap; }
+.controls { display: grid; gap: 0; border-top: 2px solid var(--line); }
+.ctrl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; padding-block: 20px; border-bottom: 2px solid var(--line); }
+.ctrl .what { display: grid; gap: 10px; align-content: start; }
+.ctrl .what > span:first-child { font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -.01em; }
+.ctrl .lesson { font-size: 15px; color: var(--muted); margin: 0; border-left: 2px solid var(--accent); padding-left: 14px; }
+.ctrl .lesson b { color: var(--fg); }
+@media (max-width: 960px) { .play { grid-template-columns: 1fr; } .stage { position: static; max-width: 420px; } }
+@media (max-width: 560px) { .ctrl { grid-template-columns: 1fr; gap: 12px; } }
+.seg { display: flex; flex-wrap: wrap; border-left: 2px solid var(--line); border-top: 2px solid var(--line); }
+.seg button { background: transparent; border: 0; border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); padding: 8px 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.seg button:hover:not([aria-pressed="true"]) { color: var(--accent); }
+.field { display: grid; gap: 6px; font-size: 13px; }
+.field input[type="text"] { font: inherit; font-size: 16px; padding: 10px 12px; border: 2px solid var(--line); background: var(--bg); color: var(--fg); width: 100%; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.colors { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 14px; }
+.colors label { display: flex; gap: 8px; align-items: center; }
+.colors input[type="color"] { width: 40px; height: 32px; border: 2px solid var(--line); padding: 0; background: none; cursor: pointer; }
+.checks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.check { padding: 14px 16px; display: grid; gap: 4px; }
+.check .k { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.check .k b { font-size: 15px; }
+.pill { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border: 2px solid currentColor; white-space: nowrap; }
+.pill.good { color: #1f8a4c; }
+.pill.ok { color: #b46a00; }
+.pill.bad { color: #c62828; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pill.good { color: #5fd08f; } :root:not([data-theme="light"]) .pill.ok { color: #ffb347; } :root:not([data-theme="light"]) .pill.bad { color: #ff7b7b; } }
+:root[data-theme="dark"] .pill.good { color: #5fd08f; }
+:root[data-theme="dark"] .pill.ok { color: #ffb347; }
+:root[data-theme="dark"] .pill.bad { color: #ff7b7b; }
+.check p { margin: 0; font-size: 14px; color: var(--muted); }
+.check .v { font-variant-numeric: tabular-nums; }
+@media (max-width: 420px) { .checks { grid-template-columns: 1fr; } }
+
+/* Blog */
+.posts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.post { display: grid; grid-template-rows: auto 1fr; }
+.post .art { aspect-ratio: 16 / 9; border-bottom: 2px solid var(--line); position: relative; overflow: hidden; background: var(--tile); }
+.post .art i { position: absolute; display: block; }
+.post .body { padding: 22px; display: grid; gap: 12px; align-content: start; }
+.post .k { display: flex; justify-content: space-between; gap: 12px; }
+.post h3 { margin: 0; font-family: var(--display); font-weight: 800; font-stretch: 106%; font-size: 24px; line-height: 1.08; letter-spacing: -.02em; text-wrap: balance; }
+.post p { margin: 0; font-size: 15.5px; }
+.post .rule { margin-top: 6px; padding: 10px 12px; background: var(--fg); color: var(--bg); font-size: 14px; font-weight: 600; }
+.post .rule span { color: var(--accent); }
+.post .try { font-size: 14px; font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--accent); justify-self: start; }
+@media (max-width: 960px) { .posts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .posts { grid-template-columns: 1fr; } }
+.filter { display: flex; flex-wrap: wrap; gap: 0; border-left: 2px solid var(--line); border-top: 2px solid var(--line); margin-bottom: 24px; width: fit-content; max-width: 100%; }
+.filter button { background: transparent; border: 0; border-right: 2px solid var(--line); border-bottom: 2px solid var(--line); padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.filter button[aria-pressed="true"] { background: var(--accent); color: #0b0b0b; }
+
+/* Engagement: reading progress, hooks, next-story, scroll motion */
+.progress { position: fixed; left: 0; right: 0; top: env(safe-area-inset-top, 0px); height: 4px; z-index: 6; pointer-events: none; }
+.progress i { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+.hook { margin: 0; font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: clamp(28px, 3.6vw, 48px); line-height: 1.02; letter-spacing: -.03em; text-wrap: balance; }
+.hook span { color: var(--accent); }
+.readtime { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.next { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: minmax(0, 1fr) 120px; border: 2px solid var(--line); background: var(--fg); color: var(--bg); transition: transform .15s, box-shadow .15s; }
+.next:hover, .next:focus-visible { transform: translate(-4px, -4px); box-shadow: 4px 4px 0 var(--accent); }
+.next .nt { padding: 22px 24px; display: grid; gap: 8px; }
+.next .nt .label { color: color-mix(in srgb, var(--bg) 60%, var(--fg)); }
+.next .nt b { font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: clamp(24px, 2.8vw, 36px); line-height: 1.02; letter-spacing: -.025em; }
+.next .nt span.q { color: var(--accent); font-weight: 600; }
+.next .ni { background-size: cover; background-position: center; border-left: 2px solid var(--line); }
+@media (max-width: 520px) { .next { grid-template-columns: 1fr; } .next .ni { height: 140px; border-left: 0; border-top: 2px solid var(--line); order: -1; } }
+.rv { transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+.js .rv:not(.in) { transform: translateY(32px); }
+.shot.rv img { transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
+.js .shot.rv:not(.in) img { transform: scale(1.08); }
+.chip { transition: transform .2s; cursor: pointer; }
+.swatch:hover .chip { transform: scaleY(1.12); transform-origin: top; }
+.copied { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+.count { font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: clamp(40px, 5vw, 72px); line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stats > div { padding: 22px; display: grid; gap: 8px; }
+.stats > div:nth-child(2) .count { color: var(--accent); }
+@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .js .rv:not(.in), .js .shot.rv:not(.in) img { transform: none; } }
+
+/* Contact band */
+.invert { background: var(--fg); color: var(--bg); border-bottom: 0; }
+.invert .label { color: color-mix(in srgb, var(--bg) 60%, var(--fg)); }
+.contact-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; padding-block: clamp(64px, 9vw, 120px); }
+.contact-left { grid-column: 1 / span 7; min-width: 0; display: grid; gap: 22px; align-content: start; }
+.contact h2 { margin: 0; font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: clamp(44px, 7vw, 100px); line-height: .9; letter-spacing: -.04em; text-wrap: balance; }
+.contact h2 .hl { background: var(--accent); color: #0b0b0b; padding: 0 .08em; }
+.reach { display: grid; gap: 10px; justify-items: start; }
+.reach div { font-size: clamp(17px, 1.8vw, 21px); font-weight: 600; user-select: all; border: 2px solid var(--bg); padding: 8px 14px; }
+form { grid-column: 9 / -1; display: grid; gap: 14px; align-content: end; min-width: 0; }
+form label { display: grid; gap: 6px; font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+form input, form textarea { font: inherit; font-family: var(--body); text-transform: none; letter-spacing: 0; font-size: 16px; color: var(--bg); background: transparent; border: 2px solid color-mix(in srgb, var(--bg) 40%, var(--fg)); padding: 10px 12px; width: 100%; }
+form textarea { resize: vertical; min-height: 90px; }
+form input::placeholder, form textarea::placeholder { color: color-mix(in srgb, var(--bg) 45%, var(--fg)); }
+form input:focus, form textarea:focus { outline: none; border-color: var(--accent); }
+form .btn { justify-self: start; background: var(--accent); border-color: var(--accent); color: #0b0b0b; }
+form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
+.sent { font-size: 14px; color: var(--accent); min-height: 1.4em; margin: 0; }
+@media (max-width: 860px) { .contact-left, form { grid-column: 1 / -1; } form { margin-top: 20px; } }
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-block: 26px; border-top: 2px solid color-mix(in srgb, var(--bg) 20%, var(--fg)); font-size: 14px; color: color-mix(in srgb, var(--bg) 60%, var(--fg)); }
+.foot .logo { height: 30px; }
+.foot nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.foot a { text-decoration: none; }
+.foot a:hover { color: var(--accent); }
+</style>
+
+</head>
+<body>
+<div class="progress" aria-hidden="true"><i id="progress"></i></div>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#home" aria-label="Promake Studio home">
+      <img class="brand-logo b" src="assets/logo-black.png" alt="promake studio">
+      <img class="brand-logo w" src="assets/logo-white.png" alt="promake studio">
+    </a>
+    <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="tabs">Menu</button>
+    <ul class="tabs" id="tabs">
+      <li><a href="#home" data-tab="home">Home</a></li>
+      <li><a href="#work" data-tab="work">Work</a></li>
+      <li><a href="#studio" data-tab="studio">Studio</a></li>
+      <li><a href="#playground" data-tab="playground">Playground</a></li>
+      <li><a href="#blog" data-tab="blog">Blog</a></li>
+    </ul>
+    <a class="btn sm" href="#contact" data-contact>Let's talk</a>
+  </div>
+</header>
+
+<main>
+<!-- ============ HOME ============ -->
+<div class="view" data-view="home">
+  <div class="wrap hero">
+    <div class="hero-text">
+      <span class="label" style="display:flex;align-items:center;gap:10px"><span class="sq"></span>End-to-end design studio · Tamil Nadu</span>
+      <h1>We are <span class="hl">weird</span> and <span class="ol">mad</span> so you can look good.</h1>
+      <p>Logos, posters, packaging, reels, podcasts, websites. If it has to look good and make sense, we design it, and we can tell you why every piece is there.</p>
+      <div class="actions">
+        <a class="btn" href="#work">See the stories →</a>
+        <a class="btn ghost" href="#playground">Play designer</a>
+      </div>
+    </div>
+    <div class="totem" aria-hidden="true"><i class="t4"></i><i class="t5"></i><i class="t3"></i><i class="t2"></i><i class="t1"></i><i class="t6"></i></div>
+  </div>
+
+  <div class="wrap" style="padding-bottom:clamp(40px,6vw,72px)">
+    <div class="ruled stats">
+      <div><span class="count" data-count="39">39</span><span class="label">Brands designed</span></div>
+      <div><span class="count" data-count="9">9</span><span class="label">Stories to read</span></div>
+      <div><span class="count" data-count="6">6</span><span class="label">Disciplines in-house</span></div>
+      <div><span class="count" data-count="4">4</span><span class="label">Steps, no mystery</span></div>
+    </div>
+  </div>
+
+  <div class="strip" aria-hidden="true">
+    <div class="strip-track">
+      <span>Building brands</span><span class="s"></span><span>Creating values</span><span class="c"></span><span>Look exceptional</span><span class="s"></span><span>Communicate clearly</span><span class="c"></span><span>Connect deeply</span><span class="s"></span><span>Convert effectively</span><span class="c"></span>
+      <span>Building brands</span><span class="s"></span><span>Creating values</span><span class="c"></span><span>Look exceptional</span><span class="s"></span><span>Communicate clearly</span><span class="c"></span><span>Connect deeply</span><span class="s"></span><span>Convert effectively</span><span class="c"></span>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>Recent stories</span>
+        <h2>Every logo we make has a reason.</h2>
+      </div>
+      <div class="ruled feat">
+        <button data-story="humann"><div class="img"><img src="assets/work/humann-hero.jpg" alt="Humann brand photo with logo" loading="lazy"></div><div class="cap"><span class="label">Mental health care · Branding</span><b>Humann</b></div></button>
+        <button data-story="zynq"><div class="img"><img src="assets/work/zynq-bag.jpg" alt="ZYNQ orange shopping bag" loading="lazy"></div><div class="cap"><span class="label">Women's clothing · Branding</span><b>ZYNQ</b></div></button>
+        <button data-story="vitomin"><div class="img"><img src="assets/work/vitomin-hero.jpg" alt="Vitomin logo over oranges" loading="lazy"></div><div class="cap"><span class="label">Health drink · Packaging</span><b>Vitomin</b></div></button>
+      </div>
+      <div class="actions" style="margin-top:28px"><a class="btn ghost" href="#work">All 9 stories →</a></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="split">
+        <p class="big">We specialise in building brands that <span>look exceptional</span>, communicate clearly, connect deeply and convert effectively.</p>
+        <div class="side">
+          <p>From strategy to execution, we craft designs that lift businesses and leave lasting impressions. Graphic design, social media, video, podcasts, reels, websites and influencer campaigns, all under one roof.</p>
+          <a class="btn ghost" href="#studio">How we think →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>Our clientele</span>
+        <h2>39 brands that trusted us to get weird.</h2>
+      </div>
+      <div class="ruled wall" id="wall"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>From the blog</span>
+        <h2>Design concepts in 30 seconds.</h2>
+      </div>
+      <div class="ruled posts" id="home-posts"></div>
+      <div class="actions" style="margin-top:28px"><a class="btn ghost" href="#blog">Read all →</a></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ WORK ============ -->
+<div class="view" data-view="work" hidden>
+  <div class="wrap page-hero">
+    <span class="label" style="display:flex;align-items:center;gap:10px"><span class="sq"></span>Work</span>
+    <h1>The story behind every <span class="hl">mark</span>.</h1>
+    <p>For each client we explain the thinking: what the brand is about, why the logo looks the way it does, and why we picked those colours.</p>
+  </div>
+  <section style="border-top:0">
+    <div class="wrap" style="padding-bottom:clamp(40px,6vw,72px)">
+      <ul class="index" id="work-index"></ul>
+    </div>
+  </section>
+  <div id="stories"></div>
+</div>
+
+<!-- ============ STUDIO ============ -->
+<div class="view" data-view="studio" hidden>
+  <div class="wrap page-hero">
+    <span class="label" style="display:flex;align-items:center;gap:10px"><span class="sq"></span>Studio</span>
+    <h1>Weird on the inside. <span class="hl">Clear</span> on the outside.</h1>
+    <p>We are end-to-end designers. Graphics, posters, social media, videos, podcasts, reels, websites: anything to do with design, we are here for you.</p>
+  </div>
+
+  <section style="border-top:2px solid var(--line)">
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>Our philosophy</span>
+        <h2>Building brands. Creating values.</h2>
+        <p>Good design is not decoration. It is a decision you can explain. These three ideas sit behind everything we make.</p>
+      </div>
+      <div class="ruled beliefs">
+        <div class="belief"><span class="shape"></span><h3>Every shape earns its place</h3><p>If we can't say out loud why a line, a curve or a colour is there, it goes. Simple marks last longer and work everywhere, from a 16-pixel icon to a 40-foot hoarding.</p></div>
+        <div class="belief"><span class="shape"></span><h3>Story before style</h3><p>Trends fade. A brand built on something true about the business does not. Humann's two figures, Vitomin's capsule, Vanam's elephant: each one comes from the client's own world.</p></div>
+        <div class="belief"><span class="shape"></span><h3>Looks good, works hard</h3><p>Pretty is the minimum. A brand also has to communicate clearly, connect with people and convert. We design for the shelf, the feed and the sales sheet at the same time.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="split">
+        <p class="big">Why do we do this? Because a brand is the most important investment a business makes, and most brands are <span>boring by accident</span>.</p>
+        <div class="side">
+          <p>We go weird so you don't have to. We ask the strange questions, try the odd ideas and throw most of them away. You only see the ones that work, along with the reason they work.</p>
+          <p>The result is a brand that people recognise, remember and trust.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>Our approach</span>
+        <h2>Four steps from first call to growth.</h2>
+      </div>
+      <div class="ruled steps">
+        <div class="step"><span class="n">1</span><h3>Discover</h3><p>We understand your brand, your market position and your growth goals.</p><ul><li>Brand interview</li><li>Competitor audit</li><li>Audience notes</li></ul></div>
+        <div class="step"><span class="n">2</span><h3>Strategise</h3><p>We build a clear creative, digital and influencer roadmap.</p><ul><li>Brand positioning</li><li>Creative direction</li><li>Channel plan</li></ul></div>
+        <div class="step"><span class="n">3</span><h3>Create &amp; execute</h3><p>From brand visuals to websites to influencer campaigns, we execute with precision.</p><ul><li>Logo and identity</li><li>Campaigns and content</li><li>Website build</li></ul></div>
+        <div class="step"><span class="n">4</span><h3>Scale &amp; support</h3><p>We monitor, optimise and keep supporting your brand as it grows.</p><ul><li>Performance tracking</li><li>Website care</li><li>Ongoing content</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>What you get</span>
+        <h2>Anything to do with design. One team.</h2>
+      </div>
+      <div class="ruled services">
+        <div class="svc"><span class="ico c"></span><h3>Brand identity</h3><ul><li>Logo design</li><li>Brand strategy</li><li>Visual identity systems</li><li>Brand guidelines</li></ul></div>
+        <div class="svc"><span class="ico"></span><h3>Creative &amp; marketing design</h3><ul><li>Social media creatives</li><li>Poster and campaign designs</li><li>Advertising concepts</li><li>Marketing collaterals</li></ul></div>
+        <div class="svc"><span class="ico t"></span><h3>Video, reels &amp; podcasts</h3><ul><li>Reels and short-form video</li><li>Brand films</li><li>Podcast production and artwork</li><li>Motion graphics</li></ul></div>
+        <div class="svc"><span class="ico h"></span><h3>Print &amp; packaging</h3><ul><li>Product packaging design</li><li>Brochures and catalogues</li><li>Corporate stationery</li><li>Promotional materials</li></ul></div>
+        <div class="svc"><span class="ico d"></span><h3>Website design &amp; management</h3><ul><li>Custom website design</li><li>E-commerce websites</li><li>Maintenance and updates</li><li>Performance and security</li></ul></div>
+        <div class="svc"><span class="ico p"></span><h3>Influencer marketing</h3><ul><li>Strategy and planning</li><li>Influencer outreach</li><li>Campaign management</li><li>Tracking and reporting</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap quote">
+    <p>“Your brand is the single most important investment you can make in your business.”</p>
+    <span class="label">Steve Jobs, co-founder of Apple</span>
+  </div>
+</div>
+
+<!-- ============ PLAYGROUND ============ -->
+<div class="view" data-view="playground" hidden>
+  <div class="wrap page-hero">
+    <span class="label" style="display:flex;align-items:center;gap:10px"><span class="sq"></span>Playground</span>
+    <h1>Design a poster. Learn <span class="hl">why</span> it works.</h1>
+    <p>Change one thing at a time and watch the poster react. Each control explains the design idea behind it, and the design check scores your choices as you go.</p>
+  </div>
+  <section style="border-top:2px solid var(--line)">
+    <div class="wrap sec">
+      <div class="play">
+        <div class="stage">
+          <div class="poster" id="poster" data-align="left" data-font="grotesk">
+            <svg id="p-svg" viewBox="0 0 400 500" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div class="ptext"><p class="ph1" id="p-h1">Weird &amp; mad</p><p class="psub" id="p-sub">Promake Studio · 2026</p></div>
+          </div>
+          <div class="row">
+            <button class="btn" id="go-weird" type="button">Go weird</button>
+            <button class="btn ghost" id="p-grid" type="button" aria-pressed="false">Show grid</button>
+            <button class="btn ghost" id="p-reset" type="button">Reset</button>
+          </div>
+          <div class="ruled checks" id="checks"></div>
+        </div>
+
+        <div class="controls">
+          <div class="ctrl">
+            <div class="what"><span>1. Your message</span>
+              <label class="field" for="pg-text">Headline<input type="text" id="pg-text" value="Weird &amp; mad" maxlength="40"></label>
+              <label class="field" for="pg-sub">Small line<input type="text" id="pg-sub" value="Promake Studio · 2026" maxlength="40"></label>
+            </div>
+            <p class="lesson"><b>Fewer words, bigger impact.</b> A poster is read in about three seconds. Keep the headline under five words so it can be large enough to stop someone walking past.</p>
+          </div>
+          <div class="ctrl">
+            <div class="what"><span>2. Shape</span>
+              <div class="seg" data-ctl="shape">
+                <button type="button" data-v="circle" aria-pressed="true">Circle</button>
+                <button type="button" data-v="square" aria-pressed="false">Square</button>
+                <button type="button" data-v="triangle" aria-pressed="false">Triangle</button>
+                <button type="button" data-v="stack" aria-pressed="false">Stack</button>
+                <button type="button" data-v="bars" aria-pressed="false">Bars</button>
+              </div>
+            </div>
+            <p class="lesson" id="l-shape"></p>
+          </div>
+          <div class="ctrl">
+            <div class="what"><span>3. Layout</span>
+              <div class="seg" data-ctl="align">
+                <button type="button" data-v="left" aria-pressed="true">Flush left</button>
+                <button type="button" data-v="center" aria-pressed="false">Centred</button>
+                <button type="button" data-v="thirds" aria-pressed="false">Rule of thirds</button>
+              </div>
+            </div>
+            <p class="lesson" id="l-align"></p>
+          </div>
+          <div class="ctrl">
+            <div class="what"><span>4. Colour</span>
+              <div class="seg" data-ctl="palette">
+                <button type="button" data-v="mono" aria-pressed="false">Mono</button>
+                <button type="button" data-v="accent" aria-pressed="true">Mono + accent</button>
+                <button type="button" data-v="complement" aria-pressed="false">Complementary</button>
+                <button type="button" data-v="analog" aria-pressed="false">Analogous</button>
+              </div>
+              <div class="colors">
+                <label for="c-bg">Background <input type="color" id="c-bg" value="#ffffff"></label>
+                <label for="c-fg">Text <input type="color" id="c-fg" value="#0b0b0b"></label>
+                <label for="c-ac">Shape <input type="color" id="c-ac" value="#ff5a1f"></label>
+              </div>
+            </div>
+            <p class="lesson" id="l-palette"></p>
+          </div>
+          <div class="ctrl">
+            <div class="what"><span>5. Typeface</span>
+              <div class="seg" data-ctl="font">
+                <button type="button" data-v="grotesk" aria-pressed="true">Wide grotesk</button>
+                <button type="button" data-v="condensed" aria-pressed="false">Condensed</button>
+                <button type="button" data-v="humanist" aria-pressed="false">Friendly sans</button>
+                <button type="button" data-v="mono" aria-pressed="false">Mono</button>
+              </div>
+            </div>
+            <p class="lesson" id="l-font"></p>
+          </div>
+          <div class="ctrl">
+            <div class="what"><span>6. Hierarchy</span>
+              <label class="field" for="pg-size">Headline size <input type="range" id="pg-size" min="6" max="28" value="15"></label>
+            </div>
+            <p class="lesson"><b>Hierarchy tells the eye where to go first.</b> When the headline is at least three times the size of the small line, nobody has to wonder what to read first. Make them close in size and they start to fight.</p>
+          </div>
+          <div class="ctrl">
+            <div class="what"><span>7. White space</span>
+              <label class="field" for="pg-margin">Margin <input type="range" id="pg-margin" min="0" max="18" value="8"></label>
+            </div>
+            <p class="lesson"><b>Empty space is not wasted space.</b> A margin of around 6 to 10 percent of the width gives the design room to breathe and makes it look deliberate. At zero, everything feels cramped and cheap.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ BLOG ============ -->
+<div class="view" data-view="blog" hidden>
+  <div class="wrap page-hero">
+    <span class="label" style="display:flex;align-items:center;gap:10px"><span class="sq"></span>Blog</span>
+    <h1>Design concepts in <span class="hl">30 seconds</span>.</h1>
+    <p>Short reads on the ideas we use every day. Each one takes about half a minute and ends with a rule you can use on your next design.</p>
+  </div>
+  <section style="border-top:2px solid var(--line)">
+    <div class="wrap sec">
+      <div class="filter" id="blog-filter">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="Colour" aria-pressed="false">Colour</button>
+        <button type="button" data-f="Type" aria-pressed="false">Type</button>
+        <button type="button" data-f="Layout" aria-pressed="false">Layout</button>
+        <button type="button" data-f="Logos" aria-pressed="false">Logos</button>
+      </div>
+      <div class="ruled posts" id="all-posts"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ CONTACT (shared) ============ -->
+<section id="contact" class="invert contact">
+  <div class="wrap contact-grid">
+    <div class="contact-left">
+      <span class="label">Get in touch</span>
+      <h2>What's <span class="hl">your</span> story?</h2>
+      <div class="reach">
+        <div>abdul@promakestudio.com</div>
+        <div>+91 89400 11009</div>
+      </div>
+    </div>
+    <form id="contact-form" novalidate>
+      <label for="f-name">Name<input id="f-name" name="name" type="text" placeholder="Your name" autocomplete="name"></label>
+      <label for="f-email">Email<input id="f-email" name="email" type="email" placeholder="you@company.com" autocomplete="email"></label>
+      <label for="f-msg">Your brand<textarea id="f-msg" name="message" placeholder="Tell us where it all started"></textarea></label>
+      <button class="btn" type="submit">Send it →</button>
+      <p class="sent" id="f-status" aria-live="polite"></p>
+    </form>
+  </div>
+  <div class="wrap foot">
+    <span class="logo" aria-label="promake studio">
+      <img class="brand-logo b" src="assets/logo-black.png" alt="">
+      <img class="brand-logo w" src="assets/logo-white.png" alt="">
+    </span>
+    <nav aria-label="Footer"><a href="#work">Work</a><a href="#studio">Studio</a><a href="#playground">Playground</a><a href="#blog">Blog</a></nav>
+    <span>© 2026 Promake Studio</span>
+  </div>
+</section>
+</main>
+
+<script>
+/* ---------- Data ---------- */
+var STORIES = [
+  { id: 'humann', name: 'Humann', sector: 'Mental health care', scope: 'Branding', q: 'Why do the last two letters hold hands?',
+    imgs: [['humann-hero.jpg', 'Humann brand photo with the tagline Mindful matches, holistic healing'], ['humann-card.jpg', 'Humann business card'], ['humann-palette.jpg', 'Humann colour palette: coral orange and melon orange']],
+    lead: 'Imagine a world where getting support for your mental health is effortless, stigma-free and made for you.',
+    story: 'Humann is an app that matches people with the right therapist in a few clicks. Its goal is to make caring for your mind feel as normal as caring for your body, and to bring that change to mental healthcare in India.',
+    logo: 'A typography-based logo. The final two letters, the “n” and “n”, become two people: a therapist and a patient, connected through Humann.',
+    parts: [['Two figures', 'The dots above the last two letters turn them into people standing side by side.'], ['The gradient', 'The letters start in deep orange, for a restless mind, and lighten in the final letter as the mind heals.'], ['The tagline', '“Mindful matches, holistic healing” sits on the same baseline, so the promise reads as part of the name.']],
+    colours: [['#EE6623', 'Coral orange', 'The chaotic mind. Warm and urgent, never cold or clinical.'], ['#F49148', 'Melon orange', 'The improved state. Lighter and calmer, used for the final letter.'], ['#FFFFFF', 'White', 'Space and quiet. The brand stays modern and minimal.']] },
+  { id: 'zynq', name: 'ZYNQ', sector: "Women's clothing", scope: 'Branding · Influencer marketing · Digital marketing', q: 'Why one loud orange?',
+    imgs: [['zynq-bag.jpg', 'ZYNQ orange shopping bag'], ['zynq-store.jpg', 'ZYNQ in-store branding'], ['zynq-posters.jpg', 'ZYNQ social posters made with AI image manipulation']],
+    lead: 'A fashion store for women who want to be noticed, without the price of a luxury label.',
+    story: 'ZYNQ needed to stand out in busy shopping streets and on crowded social feeds. We built the whole brand around one colour and one bold word, then carried it from the shop floor to tags, bags, uniforms and campaigns.',
+    logo: 'Four tall, condensed capitals. The narrow letters stack up like a fashion headline and stay readable on a hang tag, a flag or a phone screen.',
+    parts: [['Condensed capitals', 'Tall and confident, like the cover line of a fashion magazine.'], ['Four letters', 'Short enough to print huge on a bag or tiny on a label.'], ['The Q', 'Its tail gives the word a flick of movement at the end.']],
+    colours: [['#F36423', 'ZYNQ orange', 'One colour that owns the brand. Seen from across a mall, it can only be ZYNQ.'], ['#FFFFFF', 'White', 'Lets the orange shout. Used for type on orange surfaces.'], ['#0B0B0B', 'Black', 'For campaign type and price tags where clarity matters most.']] },
+  { id: 'vitomin', name: 'Vitomin', sector: 'Health drink', scope: 'Packaging design', q: 'Why is the “o” a capsule?',
+    imgs: [['vitomin-hero.jpg', 'Vitomin logo over fresh oranges'], ['vitomin-bottle.jpg', 'Vitomin supplement bottle'], ['vitomin-pack.jpg', 'Vitomin vitamin C pack with orange slices']],
+    lead: 'A vitamin C drink that wanted to look as fresh as the fruit it comes from.',
+    story: 'Supplement shelves are full of clinical white boxes. Vitomin wanted to look natural, bright and full of energy, so the packaging leans into the orange itself: its colour, its slices and its round shape.',
+    logo: 'The “o” in the middle of the name is drawn as a capsule. One glance tells you this is a vitamin, and the rounded letters keep it friendly.',
+    parts: [['The capsule “o”', 'Turns the name into a picture of the product.'], ['Rounded letters', 'Soft and approachable. Health without the hospital feel.'], ['The capsule pattern', 'Repeated across the packs as a bold, geometric texture.']],
+    colours: [['#EC4F24', 'Peel', 'The deep orange of the skin. Used for the logo and key text.'], ['#F49E32', 'Pulp', 'Juicy and warm. Used in large blocks on the packs.'], ['#FAD8A0', 'Pith', 'The soft inside of the fruit. Gives the bold colours room.']] },
+  { id: 'srikamatchi', name: 'Srikamatchi Medical Centre', sector: 'Health care', scope: 'Branding · Integrated marketing · Website maintenance', q: 'Why a cross made of pieces?',
+    imgs: [['srikamatchi-planner.jpg', 'Srikamatchi Medical Centre 2026 yearly planner'], ['srikamatchi-posters.jpg', 'Srikamatchi social media posters'], ['srikamatchi-website.jpg', 'Srikamatchi Medical Centre website']],
+    lead: 'A multi-speciality hospital in Thanjavur that wanted to feel modern, caring and close to its community.',
+    story: 'Srikamatchi Medical Centre needed one identity across everything: the yearly planner, daily social posts, bus and roadside publicity, and the website. We built a system that stays recognisable in Tamil and English, on screen and on the street.',
+    logo: 'A medical cross built from separate geometric pieces. Each piece is a different speciality, and together they form one complete centre of care.',
+    parts: [['The pieces', 'Many specialities, one hospital.'], ['The open shapes', 'Modern and approachable rather than strict and clinical.'], ['Thanjavur', 'The place name is part of the lockup. This is a local hospital and proud of it.']],
+    colours: [['#7B3F98', 'Care purple', 'Calm and trustworthy, and different from the usual hospital blue.'], ['#3AAFC4', 'Clean teal', 'Fresh and clinical, used as the support colour.'], ['#FFFFFF', 'White', 'Keeps every poster and page clean and easy to read.']] },
+  { id: 'igj', name: "IGJ Women's College", sector: 'Educational institution', scope: 'Re-branding · Environmental graphics', q: 'Why maroon and gold?',
+    imgs: [['igj-board.jpg', "IGJ Women's College vision and mission board"], ['igj-signs.jpg', 'IGJ campus signage']],
+    lead: 'A leadership campus for women, with the motto “Arise, Awake, Achieve”.',
+    story: 'Indira Gandhi Jayanthi Women’s Arts & Science College wanted its campus to feel as confident as its students. We refreshed the crest and wordmark and carried them into the campus itself: notice boards, room signs and the vision and mission walls.',
+    logo: 'A crest that carries tradition, paired with a clean serif monogram. The shield speaks to history; the type keeps it current.',
+    parts: [['The crest', 'Heritage and pride, the way a college has always been marked.'], ['The IGJ monogram', 'Simple serif letters that work on a lanyard or a 3-metre wall.'], ['The motto', '“Arise, Awake, Achieve” runs under the mark on every application.']],
+    colours: [['#77192D', 'Maroon', 'Academic and serious. The colour of achievement and ceremony.'], ['#C9A46A', 'Gold', 'Ambition and honour, used for the crest details.'], ['#FFFFFF', 'White', 'Gives signs and boards maximum contrast for reading at a distance.']] },
+  { id: 'elan', name: 'Elan Hospitality', sector: 'Premium hospitality amenities', scope: 'Branding · Packaging', q: 'Why the soft olive?',
+    imgs: [['elan-box.jpg', 'Elan amenities boxes, slippers and kit'], ['elan-bottles.jpg', 'Elan toiletry bottles'], ['elan-card.jpg', 'Elan business card']],
+    lead: 'Hotel amenities that should feel like a quiet luxury, from the soap to the slippers.',
+    story: 'Elan supplies hotels with toiletries, kits and linen. The brand had to look expensive without shouting, so a guest notices the care, not the logo.',
+    logo: 'A fine monogram of the E and H, crowned like a hotel crest. It is delicate enough for a soap bottle and elegant enough for a brochure cover.',
+    parts: [['The monogram', 'Interlocked letters, the classic signature of a grand hotel.'], ['Thin lines', 'Quiet and refined. Luxury that whispers.'], ['The tagline', '“Experience pure excellence” sets the promise.']],
+    colours: [['#7E8660', 'Olive', 'Natural and calm, like a garden spa.'], ['#F7F8F2', 'Linen', 'The colour of fresh hotel sheets.'], ['#2E3222', 'Deep moss', 'For small type, so it stays readable on tiny bottles.']] },
+  { id: 'tngts', name: 'Tamil Nadu Global Tourism Summit 2026', sector: 'Government event', scope: 'Event branding', q: 'Why a temple on the water?',
+    imgs: [['tngts-arches.jpg', 'Summit entrance arches'], ['tngts-wall.jpg', 'Summit venue walls and graphics']],
+    lead: 'A global summit to show the world everything Tamil Nadu has to offer travellers.',
+    story: 'The summit brought tourism leaders together in one venue. We created the event identity and turned the venue into a journey through the state, with entrance arches, photo walls and a colourful grid of places, food and culture.',
+    logo: 'Tamil Nadu’s iconic temple tower and coastline drawn as one emblem, with bold display type. Heritage and the sea, the two big reasons people visit.',
+    parts: [['The temple tower', 'The strongest symbol of Tamil heritage.'], ['The waves', 'A long coastline and the shore temples.'], ['The colour grid', 'Each square is a different experience, together they make the state.']],
+    colours: [['#B8862F', 'Temple gold', 'Warm stone and lamps at dusk.'], ['#1E7FA8', 'Bay blue', 'The Bay of Bengal along the coast.'], ['#C8372D', 'Kolam red', 'Festival colour, used for energy and highlights.']] },
+  { id: 'vanam', name: 'Vanam', sector: 'Organic millets', scope: 'Re-branding · Packaging', q: 'Why an elephant on the pack?',
+    imgs: [['vanam-packs.jpg', 'Vanam millet and rice packs'], ['vanam-redrice.jpg', 'Vanam red rice pack']],
+    lead: 'Traditional grains, grown naturally. “From nature’s womb.”',
+    story: 'Vanam means forest in Tamil. The re-brand made the Tamil wordmark the hero and gave every grain its own soft pack colour, so shoppers can find their millet at a glance.',
+    logo: 'The name is written in Tamil script with a single leaf rising from it. The leaf says organic; the script says rooted in local tradition.',
+    parts: [['Tamil script', 'Made for the people who grew up with these grains.'], ['The leaf', 'One shape that says natural and growing.'], ['The elephant', 'A gentle giant of the forest, printed big on every pack.']],
+    colours: [['#223C2E', 'Forest', 'Deep and earthy. The colour of the wordmark.'], ['#1E8C4E', 'Leaf', 'Fresh growth, used for the leaf and highlights.'], ['#F2C9B8', 'Grain tones', 'Each grain gets a soft pack colour of its own.']] },
+  { id: 'vtsr', name: 'VTSR Silks', sector: 'Textile, family retail', scope: 'Branding · Influencer marketing · Digital marketing', q: 'Why a flower of eight petals?',
+    imgs: [['vtsr-posters.jpg', 'VTSR Silks campaign posters'], ['vtsr-billboards.jpg', 'VTSR Silks billboards']],
+    lead: 'A family silk store in Tenkasi that dresses every generation for every festival.',
+    story: 'VTSR Silks wanted to be the first name families think of for weddings and festivals. We built the brand and ran the campaigns: festival posters, billboards and influencer collaborations across the season.',
+    logo: 'A symmetrical eight-petal motif, like a pattern woven into silk, beside a clean wordmark in English and Tamil.',
+    parts: [['The motif', 'Inspired by woven silk patterns and kolam designs.'], ['Symmetry', 'Balance and tradition, the feeling of a family business.'], ['Two languages', 'English for reach, Tamil for heart.']],
+    colours: [['#1C9354', 'Silk green', 'Prosperity and new beginnings, and rare among red-heavy silk brands.'], ['#C9A227', 'Zari gold', 'The gold thread in a silk sari border.'], ['#B3122E', 'Festival red', 'Used in campaigns for weddings and Deepavali.']] }
+];
+
+var CLIENTS = ['Yasen Yarns','Anandam Law College','Joy Stories','Play Monk','The Barbeque Lounge','Kamatchi Mess','iblinds','Patterns Living','Virtus Book of World Records','TNCPEA','Bharani Express','VTSR Silks','One Touch Solutionss','Veetula Vishesham','Raghavendra Matric School','Luxus','Vanam','abm Tours & Travels','Marutham Supermarket','The Fabriq Store','Himavath','Ezone Events & Learning','Softgel Healthcare','Acquired Edge','Asian Association of Oral and Maxillofacial Surgeons','Impress','Planet Education','Srikamatchi Medical Centre','ZYNQ','Vitomin','Humann','IGJ Women’s College','Elan Hospitality','Tamil Nadu Tourism','Evoke Media',null,'Harting','Vestas','Impreus','IAF'];
+
+var POSTS = [
+  { t: 'Contrast: why black and white never gets old', tag: 'Colour', art: 'contrast',
+    b: 'Contrast is the difference between two things: light and dark, big and small, loud and quiet. The eye goes to the place with the most contrast first. That is why black and white is so strong. It is the maximum difference, so nothing gets lost. For readable text, aim for a contrast ratio of at least 4.5 to 1 between text and background.',
+    r: 'Make the thing you want seen <span>the most different</span> thing on the page.' },
+  { t: 'Hierarchy: the three-second test', tag: 'Layout', art: 'hier',
+    b: 'Show your design to someone for three seconds, then hide it. Ask what they remember. If it is not the one thing you wanted, your hierarchy is off. Hierarchy is ranking: one hero, a few supporting players, and everything else quiet. Size, weight, colour and position all add rank. Use too many at once and everything shouts.',
+    r: 'One hero per layout. <span>Everything else supports it.</span>' },
+  { t: 'White space is not empty', tag: 'Layout', art: 'space',
+    b: 'Clients often ask us to fill the gaps. We push back. White space, also called negative space, is what makes the important parts feel important. Luxury brands use lots of it because it signals confidence. Discount flyers use none because they are trying to say everything. Space gives the eye a place to rest and a path to follow.',
+    r: 'When in doubt, <span>remove something</span> and add space instead.' },
+  { t: 'The grid: an invisible skeleton', tag: 'Layout', art: 'grid',
+    b: 'Most good layouts sit on a grid you never see. Columns and rows give every element a place to line up with, so the design feels organised even when it is bold. This website uses a 12-column grid because 12 splits neatly into halves, thirds and quarters. Breaking the grid on purpose works only when there is a grid to break.',
+    r: 'Line things up. <span>Then break one rule</span>, on purpose.' },
+  { t: 'The 60-30-10 colour rule', tag: 'Colour', art: 'six',
+    b: 'Interior designers use this, and it works on screens and packaging too. Use your main colour on about 60 percent of the design, a second colour on 30 percent, and an accent on just 10 percent. The accent becomes special because it is rare. On this site, black and white share the 90 and orange takes the 10.',
+    r: 'Your accent colour is <span>loudest when it is rare</span>.' },
+  { t: 'Kerning: the gap between letters', tag: 'Type', art: 'kern',
+    b: 'Kerning is adjusting the space between specific pairs of letters. Fonts come with default spacing, but some pairs like “AV”, “To” or “LT” leave awkward holes. In body text you rarely notice. In a logo, set huge, those gaps look like mistakes. We kern every wordmark by hand, letter pair by letter pair, until the word reads as one shape.',
+    r: 'Judge spacing by the <span>area between letters</span>, not the distance.' },
+  { t: 'Can your logo survive 16 pixels?', tag: 'Logos', art: 'small',
+    b: 'A logo lives on billboards and on browser tabs, where it is 16 pixels wide. Thin lines disappear, small text turns to mush and gradients go muddy. That is why the strongest logos are simple shapes. Before we present a logo, we test it tiny, in one colour, and reversed out of black. If it fails any test, it is not finished.',
+    r: 'If it does not work <span>small and in one colour</span>, it does not work.' },
+  { t: 'Gestalt: your brain fills in the gaps', tag: 'Logos', art: 'gestalt',
+    b: 'Gestalt is a set of rules for how the brain groups what it sees. Closure means we complete broken shapes. Proximity means things that sit close together feel related. Designers use these to say two things at once: Humann’s last two letters read as two people, and Vitomin’s “o” reads as both a letter and a capsule.',
+    r: 'Let the viewer <span>finish the picture</span>. They will remember it.' },
+  { t: 'Typeface personality', tag: 'Type', art: 'type',
+    b: 'Every typeface has a voice before you read a single word. Serifs feel established and trustworthy. Geometric sans faces feel modern and precise. Condensed capitals feel urgent, like a headline. Rounded faces feel friendly. Picking a typeface is casting an actor: the words are the script, the font is how they are spoken.',
+    r: 'Use <span>two typefaces at most</span>: one to speak, one to explain.' }
+];
+
+/* ---------- Render: clients, stories, posts ---------- */
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+document.getElementById('wall').innerHTML = CLIENTS.map(function (n, i) {
+  if (!n) return '';
+  return '<div title="' + esc(n) + '"><img src="assets/clients/c' + String(i).padStart(2, '0') + '.png" alt="' + esc(n) + '" loading="lazy"></div>';
+}).join('');
+
+var shapesIdx = ['border-radius:50%', '', 'clip-path:polygon(0 100%,50% 0,100% 100%)'];
+document.getElementById('work-index').innerHTML = STORIES.map(function (s, i) {
+  return '<li><button data-story="' + s.id + '"><span class="label">' + String(i + 1).padStart(2, '0') + '</span><span class="i-name">' + esc(s.name) + '</span><span class="i-q">' + esc(s.q) + '</span><span class="i-arrow">↓</span></button></li>';
+}).join('');
+
+document.getElementById('stories').innerHTML = STORIES.map(function (s, i) {
+  var shots = s.imgs.slice(1).map(function (im) { return '<div class="shot rv"><img src="assets/work/' + im[0] + '" alt="' + esc(im[1]) + '" loading="lazy"></div>'; }).join('');
+  var n = STORIES[(i + 1) % STORIES.length];
+  var words = (s.lead + s.story + s.logo + s.parts.join(' ') + s.colours.join(' ')).split(/\s+/).length;
+  var mins = Math.max(1, Math.round(words / 160 + 0.4));
+  var qWords = s.q.split(' ');
+  var hookQ = esc(qWords.slice(0, -2).join(' ')) + ' <span>' + esc(qWords.slice(-2).join(' ')) + '</span>';
+  return '<section id="story-' + s.id + '"><div class="wrap story">' +
+    '<aside class="story-side"><div class="sticky"><span class="label">Story ' + (i + 1) + ' of ' + STORIES.length + '</span><h2>' + esc(s.name) + '</h2>' +
+    '<dl class="meta"><dt>Sector</dt><dd>' + esc(s.sector) + '</dd><dt>Scope</dt><dd>' + esc(s.scope) + '</dd><dt>Read</dt><dd>' + mins + ' min</dd></dl></div></aside>' +
+    '<div class="story-main">' +
+      '<p class="hook rv">' + hookQ + '</p>' +
+      '<div class="shot rv"><img src="assets/work/' + s.imgs[0][0] + '" alt="' + esc(s.imgs[0][1]) + '" loading="lazy"></div>' +
+      '<div class="chapter rv"><h3>The story</h3><p class="lead">' + esc(s.lead) + '</p><p>' + esc(s.story) + '</p></div>' +
+      '<div class="chapter rv"><h3>Why the logo</h3><p>' + esc(s.logo) + '</p><ul class="anatomy">' + s.parts.map(function (p) { return '<li><b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></li>'; }).join('') + '</ul></div>' +
+      '<div class="chapter rv"><h3>Why the colours</h3><div class="ruled swatches">' + s.colours.map(function (c) { return '<div class="swatch"><button class="chip" type="button" aria-label="Copy ' + c[0] + '" data-hex="' + c[0] + '" style="background:' + c[0] + ';border:0;border-bottom:2px solid var(--line);width:100%"></button><div class="txt"><b>' + esc(c[1]) + '</b><code>' + c[0] + '</code><p>' + esc(c[2]) + '</p></div></div>'; }).join('') + '</div></div>' +
+      (shots ? '<div class="chapter rv"><h3>What we made</h3><div class="shots">' + shots + '</div></div>' : '') +
+      '<button class="next rv" data-story="' + n.id + '"><span class="nt"><span class="label">Next story · ' + esc(n.sector) + '</span><b>' + esc(n.name) + '</b><span class="q">' + esc(n.q) + ' →</span></span><span class="ni" style="background-image:url(assets/work/' + n.imgs[0][0] + ')"></span></button>' +
+    '</div></div></section>';
+}).join('');
+
+var ART = {
+  contrast: '<i style="inset:0 50% 0 0;background:var(--fg)"></i><i style="width:34%;aspect-ratio:1;left:33%;top:20%;border-radius:50%;background:var(--accent)"></i>',
+  hier: '<i style="left:10%;top:22%;width:56%;height:22%;background:var(--fg)"></i><i style="left:10%;top:54%;width:36%;height:8%;background:var(--muted)"></i><i style="left:10%;top:68%;width:28%;height:8%;background:var(--muted)"></i><i style="right:10%;top:22%;width:12%;aspect-ratio:1;background:var(--accent)"></i>',
+  space: '<i style="width:12%;aspect-ratio:1;left:44%;top:39%;background:var(--accent)"></i>',
+  grid: '<i style="inset:12%;background:repeating-linear-gradient(90deg,var(--fg) 0 2px,transparent 2px 16.66%)"></i><i style="left:12%;top:30%;width:50%;height:40%;background:var(--accent)"></i>',
+  six: '<i style="inset:0 40% 0 0;background:var(--fg)"></i><i style="inset:0 10% 0 60%;background:var(--bg)"></i><i style="inset:0 0 0 90%;background:var(--accent)"></i>',
+  kern: '<i style="left:18%;top:25%;width:28%;height:50%;background:var(--fg);clip-path:polygon(0 0,30% 0,50% 70%,70% 0,100% 0,60% 100%,40% 100%)"></i><i style="left:40%;top:25%;width:28%;height:50%;background:var(--fg);clip-path:polygon(0 100%,40% 0,60% 0,100% 100%,70% 100%,50% 30%,30% 100%)"></i><i style="left:66%;top:25%;width:3%;height:50%;background:var(--accent)"></i>',
+  small: '<i style="width:30%;aspect-ratio:1;left:14%;top:20%;border-radius:50%;background:var(--fg)"></i><i style="width:12%;aspect-ratio:1;left:56%;top:46%;border-radius:50%;background:var(--fg)"></i><i style="width:4%;aspect-ratio:1;left:78%;top:58%;border-radius:50%;background:var(--accent)"></i>',
+  gestalt: '<i style="width:14%;aspect-ratio:1;left:24%;top:24%;background:var(--fg);clip-path:polygon(0 0,100% 0,100% 30%,30% 30%,30% 100%,0 100%)"></i><i style="width:14%;aspect-ratio:1;right:24%;top:24%;background:var(--fg);clip-path:polygon(0 0,100% 0,100% 100%,70% 100%,70% 30%,0 30%)"></i><i style="width:14%;aspect-ratio:1;left:24%;bottom:14%;background:var(--fg);clip-path:polygon(0 0,30% 0,30% 70%,100% 70%,100% 100%,0 100%)"></i><i style="width:14%;aspect-ratio:1;right:24%;bottom:14%;background:var(--accent);clip-path:polygon(70% 0,100% 0,100% 100%,0 100%,0 70%,70% 70%)"></i>',
+  type: '<i style="left:10%;top:30%;width:22%;height:40%;background:var(--fg);clip-path:polygon(0 0,100% 0,100% 20%,60% 20%,60% 100%,40% 100%,40% 20%,0 20%)"></i><i style="left:39%;top:30%;width:22%;height:40%;background:var(--accent);border-radius:999px"></i><i style="left:68%;top:30%;width:22%;height:40%;background:var(--fg);clip-path:polygon(0 100%,50% 0,100% 100%)"></i>'
+};
+function postHTML(p) {
+  var tryIt = /Colour|Layout|Type/.test(p.tag) ? '<a class="try" href="#playground">Try it in the Playground →</a>' : '';
+  return '<article class="post" data-tag="' + p.tag + '"><div class="art" aria-hidden="true">' + (ART[p.art] || '') + '</div><div class="body"><div class="k"><span class="label">' + p.tag + '</span><span class="label">30 sec read</span></div><h3>' + esc(p.t) + '</h3><p>' + esc(p.b) + '</p><div class="rule">' + p.r + '</div>' + tryIt + '</div></article>';
+}
+document.getElementById('all-posts').innerHTML = POSTS.map(postHTML).join('');
+document.getElementById('home-posts').innerHTML = [POSTS[2], POSTS[4], POSTS[7]].map(postHTML).join('');
+
+document.getElementById('blog-filter').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+  var f = b.dataset.f;
+  document.querySelectorAll('#all-posts .post').forEach(function (p) { p.hidden = !(f === 'all' || p.dataset.tag === f); });
+});
+
+/* ---------- Routing ---------- */
+var VIEWS = ['home', 'work', 'studio', 'playground', 'blog'];
+var pendingStory = null;
+function route() {
+  var h = location.hash.replace('#', '');
+  if (h === 'contact') { document.getElementById('contact').scrollIntoView(); return; }
+  var v = VIEWS.indexOf(h) >= 0 ? h : 'home';
+  document.querySelectorAll('.view').forEach(function (el) { el.hidden = el.dataset.view !== v; });
+  document.querySelectorAll('[data-tab]').forEach(function (a) { if (a.dataset.tab === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  document.getElementById('tabs').classList.remove('open');
+  document.getElementById('menu-btn').setAttribute('aria-expanded', 'false');
+  if (pendingStory && v === 'work') {
+    var el = document.getElementById('story-' + pendingStory); pendingStory = null;
+    if (el) { el.scrollIntoView(); return; }
+  }
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-story]'); if (!b) return;
+  pendingStory = b.dataset.story;
+  if (location.hash === '#work') route(); else location.hash = 'work';
+});
+document.querySelector('[data-contact]').addEventListener('click', function (e) { e.preventDefault(); document.getElementById('contact').scrollIntoView(); });
+document.getElementById('menu-btn').addEventListener('click', function () {
+  var t = document.getElementById('tabs'); var open = t.classList.toggle('open'); this.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+route();
+
+/* ---------- Playground ---------- */
+var poster = document.getElementById('poster'), svg = document.getElementById('p-svg');
+var DEF = { shape: 'circle', align: 'left', palette: 'accent', font: 'grotesk', size: 15, margin: 8, text: 'Weird & mad', sub: 'Promake Studio · 2026', bg: '#ffffff', fg: '#0b0b0b', ac: '#ff5a1f' };
+var S = Object.assign({}, DEF);
+var PALETTES = {
+  mono: { bg: '#ffffff', fg: '#0b0b0b', ac: '#0b0b0b' },
+  accent: { bg: '#ffffff', fg: '#0b0b0b', ac: '#ff5a1f' },
+  complement: { bg: '#1d3fbb', fg: '#ffffff', ac: '#ff7a1a' },
+  analog: { bg: '#ffd23f', fg: '#7a1f00', ac: '#ff5a1f' }
+};
+var LESSONS = {
+  shape: {
+    circle: '<b>Circles feel friendly and complete.</b> No corners means nothing feels sharp. They draw the eye to their centre, which is why so many logos and buttons are round.',
+    square: '<b>Squares feel stable and honest.</b> Four equal sides suggest order, reliability and strength. Think of a building block.',
+    triangle: '<b>Triangles feel like energy and direction.</b> They point somewhere, so the eye follows. Point up for growth, sideways for movement.',
+    stack: '<b>Stacking creates rhythm.</b> Repeating a shape in growing sizes builds a visual beat and a sense of balance. It is the shape on the first page of our own profile.',
+    bars: '<b>Repetition builds pattern.</b> Three bars read as a group, not three separate lines. Our brain groups things that look alike, which is called similarity.'
+  },
+  align: {
+    left: '<b>Flush left is the easiest to read.</b> Every line starts in the same place, so the eye knows where to return. It feels modern and confident.',
+    center: '<b>Centred feels formal and calm.</b> Great for invitations and short titles, but hard work for long text because each line starts in a new place.',
+    thirds: '<b>The rule of thirds adds tension.</b> Split the frame into three by three. Putting the key element on one of those lines, not dead centre, feels more alive.'
+  },
+  palette: {
+    mono: '<b>One colour, maximum contrast.</b> Black and white forces the design to work through shape and type alone. If it works in mono, it will work in anything.',
+    accent: '<b>Mono plus one accent.</b> Black and white do 90 percent of the work and the accent takes the 10. The eye goes straight to the orange.',
+    complement: '<b>Complementary colours sit opposite on the colour wheel.</b> Blue and orange make each other look brighter. High energy, so use with care.',
+    analog: '<b>Analogous colours sit side by side on the wheel.</b> Yellow, orange and red feel warm and harmonious, but check the text still has enough contrast.',
+    custom: '<b>Your own palette.</b> Keep an eye on the contrast score. Pretty colours mean nothing if people cannot read the words.'
+  },
+  font: {
+    grotesk: '<b>Wide, heavy grotesks feel bold and loud.</b> Wide letters take up space and demand attention. This is the voice of our own headlines.',
+    condensed: '<b>Condensed capitals feel urgent.</b> Narrow letters fit more words into a tall space, like a newspaper headline or a fashion label such as ZYNQ.',
+    humanist: '<b>Friendly sans faces feel approachable.</b> Softer letter shapes and normal case read like a conversation rather than a shout.',
+    mono: '<b>Monospaced type feels technical.</b> Every letter takes the same width, like a typewriter or code. Good for a nerdy, honest voice.'
+  }
+};
+function lum(hex) {
+  var c = hex.replace('#', ''); if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+  var rgb = [0, 2, 4].map(function (i) { var v = parseInt(c.substr(i, 2), 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+function ratio(a, b) { var l1 = lum(a), l2 = lum(b); var hi = Math.max(l1, l2), lo = Math.min(l1, l2); return (hi + 0.05) / (lo + 0.05); }
+function shapeSVG() {
+  var a = S.ac, f = S.fg;
+  switch (S.shape) {
+    case 'circle': return '<circle cx="270" cy="150" r="110" fill="' + a + '"/>';
+    case 'square': return '<rect x="170" y="40" width="200" height="200" fill="' + a + '"/><rect x="140" y="210" width="60" height="60" fill="' + f + '"/>';
+    case 'triangle': return '<polygon points="380,30 380,290 120,290" fill="' + a + '"/>';
+    case 'stack': return '<circle cx="290" cy="50" r="18" fill="' + f + '" opacity=".25"/><circle cx="290" cy="110" r="32" fill="' + f + '"/><circle cx="290" cy="200" r="52" fill="' + a + '"/>';
+    case 'bars': return '<rect x="250" y="0" width="22" height="260" fill="' + a + '"/><rect x="292" y="0" width="22" height="260" fill="' + f + '"/><rect x="334" y="0" width="22" height="260" fill="' + a + '"/>';
+  }
+  return '';
+}
+function pill(cls, txt) { return '<span class="pill ' + cls + '">' + txt + '</span>'; }
+function renderPoster() {
+  poster.style.setProperty('--pbg', S.bg); poster.style.setProperty('--pfg', S.fg); poster.style.setProperty('--pac', S.ac);
+  poster.style.setProperty('--m', S.margin + '%'); poster.style.setProperty('--hs', S.size);
+  poster.dataset.align = S.align; poster.dataset.font = S.font;
+  svg.innerHTML = shapeSVG();
+  document.getElementById('p-h1').textContent = S.text || ' ';
+  document.getElementById('p-sub').textContent = S.sub;
+  document.getElementById('l-shape').innerHTML = LESSONS.shape[S.shape];
+  document.getElementById('l-align').innerHTML = LESSONS.align[S.align];
+  document.getElementById('l-palette').innerHTML = LESSONS.palette[S.palette];
+  document.getElementById('l-font').innerHTML = LESSONS.font[S.font];
+  document.getElementById('c-bg').value = S.bg; document.getElementById('c-fg').value = S.fg; document.getElementById('c-ac').value = S.ac;
+  document.querySelectorAll('.seg').forEach(function (g) { var k = g.dataset.ctl; g.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === S[k] ? 'true' : 'false'); }); });
+
+  var cr = ratio(S.fg, S.bg);
+  var hier = (S.size * 0.5) / 2.6;
+  var words = (S.text.trim().match(/\S+/g) || []).length;
+  var c1 = cr >= 7 ? pill('good', 'AAA') : cr >= 4.5 ? pill('good', 'AA') : cr >= 3 ? pill('ok', 'Large only') : pill('bad', 'Hard to read');
+  var c2 = hier >= 3 ? pill('good', 'Clear') : hier >= 2 ? pill('ok', 'Close') : pill('bad', 'Fighting');
+  var c3 = S.margin >= 6 && S.margin <= 12 ? pill('good', 'Balanced') : S.margin < 6 ? pill(S.margin < 3 ? 'bad' : 'ok', 'Cramped') : pill('ok', 'Very airy');
+  var c4 = words === 0 ? pill('bad', 'Empty') : words <= 4 ? pill('good', 'Punchy') : words <= 7 ? pill('ok', 'Wordy') : pill('bad', 'Too long');
+  document.getElementById('checks').innerHTML =
+    '<div class="check"><div class="k"><b>Contrast</b>' + c1 + '</div><p class="v">' + cr.toFixed(1) + ' : 1 text on background</p></div>' +
+    '<div class="check"><div class="k"><b>Hierarchy</b>' + c2 + '</div><p class="v">Headline is ' + hier.toFixed(1) + '× the small line</p></div>' +
+    '<div class="check"><div class="k"><b>White space</b>' + c3 + '</div><p class="v">' + S.margin + '% margin</p></div>' +
+    '<div class="check"><div class="k"><b>Message</b>' + c4 + '</div><p class="v">' + words + ' word' + (words === 1 ? '' : 's') + ' in the headline</p></div>';
+}
+document.querySelectorAll('.seg').forEach(function (g) {
+  g.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var k = g.dataset.ctl; S[k] = b.dataset.v;
+    if (k === 'palette') Object.assign(S, PALETTES[S.palette]);
+    renderPoster();
+  });
+});
+document.getElementById('pg-text').addEventListener('input', function () { S.text = this.value; renderPoster(); });
+document.getElementById('pg-sub').addEventListener('input', function () { S.sub = this.value; renderPoster(); });
+document.getElementById('pg-size').addEventListener('input', function () { S.size = +this.value; renderPoster(); });
+document.getElementById('pg-margin').addEventListener('input', function () { S.margin = +this.value; renderPoster(); });
+['bg', 'fg', 'ac'].forEach(function (k) {
+  document.getElementById('c-' + k).addEventListener('input', function () { S[k] = this.value; S.palette = 'custom'; renderPoster(); });
+});
+document.getElementById('p-grid').addEventListener('click', function () {
+  var on = poster.classList.toggle('grid-on'); this.setAttribute('aria-pressed', on ? 'true' : 'false'); this.textContent = on ? 'Hide grid' : 'Show grid';
+});
+function syncInputs() { document.getElementById('pg-text').value = S.text; document.getElementById('pg-sub').value = S.sub; document.getElementById('pg-size').value = S.size; document.getElementById('pg-margin').value = S.margin; }
+document.getElementById('p-reset').addEventListener('click', function () { S = Object.assign({}, DEF); syncInputs(); renderPoster(); });
+document.getElementById('go-weird').addEventListener('click', function () {
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  S.shape = pick(['circle', 'square', 'triangle', 'stack', 'bars']);
+  S.align = pick(['left', 'center', 'thirds']);
+  S.font = pick(['grotesk', 'condensed', 'humanist', 'mono']);
+  S.palette = pick(['mono', 'accent', 'complement', 'analog']);
+  Object.assign(S, PALETTES[S.palette]);
+  S.size = 10 + Math.floor(Math.random() * 16);
+  S.margin = 4 + Math.floor(Math.random() * 10);
+  S.text = pick(['Weird & mad', 'Look good', 'Make it loud', 'Less is more', 'Hello, brand']);
+  syncInputs(); renderPoster();
+});
+renderPoster();
+
+/* ---------- Engagement ---------- */
+document.documentElement.classList.add('js');
+var bar = document.getElementById('progress');
+function onScroll() {
+  var h = document.documentElement.scrollHeight - innerHeight;
+  bar.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, scrollY / h) : 0) + ')';
+}
+addEventListener('scroll', onScroll, { passive: true }); addEventListener('hashchange', onScroll); onScroll();
+if ('IntersectionObserver' in window) {
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+  var co = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return; co.unobserve(e.target);
+      var el = e.target, end = +el.dataset.count, t0 = performance.now();
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      (function tick(t) { var p = Math.min(1, (t - t0) / 900); el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); })(t0);
+    });
+  });
+  document.querySelectorAll('[data-count]').forEach(function (el) { co.observe(el); });
+} else { document.querySelectorAll('.rv').forEach(function (el) { el.classList.add('in'); }); }
+document.addEventListener('click', function (e) {
+  var c = e.target.closest('[data-hex]'); if (!c) return;
+  var hex = c.dataset.hex, code = c.parentNode.querySelector('code');
+  function done(msg) { code.textContent = msg; setTimeout(function () { code.textContent = hex; }, 1400); }
+  try { navigator.clipboard.writeText(hex).then(function () { done('Copied ' + hex); }, function () { done(hex); }); } catch (err) { done(hex); }
+});
+
+/* ---------- Contact ---------- */
+document.getElementById('contact-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var email = document.getElementById('f-email').value.trim();
+  var status = document.getElementById('f-status');
+  if (!/^\S+@\S+\.\S+$/.test(email)) { status.textContent = 'Add a valid email so we can reply.'; return; }
+  status.textContent = 'Preview only: this form is not connected yet. Email or call us for now.';
+});
+</script>
+
+</body>
+</html>
