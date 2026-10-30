@@ -343,6 +343,19 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .js .rv:not(.in), .js .shot.rv:not(.in) img { transform: none; } }
 
+/* Logos we designed */
+.marks { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.marks figure { margin: 0; display: grid; grid-template-rows: auto auto; background: #fff; color: #0b0b0b; }
+.marks .m-img { aspect-ratio: 5 / 4; display: grid; place-items: center; border-bottom: 2px solid var(--line); overflow: hidden; }
+.marks img { width: 100%; height: 100%; object-fit: contain; transition: transform .4s cubic-bezier(.3,1.4,.5,1); }
+.marks figure:hover img { transform: scale(1.08); }
+.marks figcaption { padding: 14px 16px; display: grid; gap: 4px; background: var(--bg); color: var(--fg); }
+.marks figcaption b { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -.01em; }
+@media (max-width: 860px) { .marks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.wall div { position: relative; }
+.wall div.ours::after { content: ""; position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; background: var(--accent); }
+.legend { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 14px; color: var(--muted); }
+
 /* Contact band */
 .invert { background: var(--fg); color: var(--bg); border-bottom: 0; }
 .invert .label { color: color-mix(in srgb, var(--bg) 60%, var(--fg)); }
@@ -456,6 +469,7 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
         <h2>Some of the 50+ brands that trusted us to get weird.</h2>
       </div>
       <div class="ruled wall" id="wall"></div>
+      <p class="legend"><span class="sq"></span>Logo designed by Promake</p>
     </div>
   </section>
 
@@ -481,6 +495,20 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
   <section style="border-top:0">
     <div class="wrap" style="padding-bottom:clamp(40px,6vw,72px)">
       <ul class="index" id="work-index"></ul>
+    </div>
+  </section>
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>Logos we designed</span>
+        <h2>Marks made in our studio.</h2>
+      </div>
+      <div class="ruled marks">
+        <figure><div class="m-img"><img src="assets/clients/c42.png" alt="Green Events logo" loading="lazy"></div><figcaption><b>Green Events</b><span class="label">Events · Logo</span></figcaption></figure>
+        <figure><div class="m-img"><img src="assets/clients/c41.png" alt="The Fourth Room logo" loading="lazy"></div><figcaption><b>The Fourth Room</b><span class="label">Community space · Logo</span></figcaption></figure>
+        <figure><div class="m-img"><img src="assets/clients/c48.png" alt="Voice of Ray logo" loading="lazy"></div><figcaption><b>Voice of Ray</b><span class="label">Logo design</span></figcaption></figure>
+        <figure><div class="m-img"><img src="assets/clients/c43.png" alt="Yabs Photobooths logo" loading="lazy"></div><figcaption><b>Yabs Photobooths</b><span class="label">Photobooths · Logo</span></figcaption></figure>
+      </div>
     </div>
   </section>
   <div id="stories"></div>
@@ -764,6 +792,8 @@ var STORIES = [
 
 var CLIENTS = ['Yasen Yarns','Anandam Law College','Joy Stories','Play Monk','The Barbeque Lounge','Kamatchi Mess','iblinds','Patterns Living','Virtus Book of World Records','TNCPEA','Bharani Express',null,'One Touch Solutionss','Veetula Vishesham','Raghavendra Matric School','Luxus','Vanam','abm Tours & Travels','Marutham Supermarket','The Fabriq Store','Himavath','Ezone Events & Learning','Softgel Healthcare','Acquired Edge','Asian Association of Oral and Maxillofacial Surgeons','Impress',null,'Srikamatchi Medical Centre',null,'Vitomin','Humann','IGJ Women’s College','Elan Hospitality','Tamil Nadu Tourism','Evoke Media',null,'Harting','Vestas','Impreus','IAF','IK Classiva','The Fourth Room','Green Events','Yabs Photobooths','Craft Workshops Chennai','New Freezing Point','Around Safe Nets','Proodle','Voice of Ray'];
 
+var OURS = ['Green Events', 'The Fourth Room', 'Voice of Ray', 'Yabs Photobooths', 'Humann'];
+
 var POSTS = [
   { t: 'Contrast: why black and white never gets old', tag: 'Colour', art: 'contrast',
     b: 'Contrast is the difference between two things: light and dark, big and small, loud and quiet. The eye goes to the place with the most contrast first. That is why black and white is so strong. It is the maximum difference, so nothing gets lost. For readable text, aim for a contrast ratio of at least 4.5 to 1 between text and background.',
@@ -799,7 +829,8 @@ function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&
 
 document.getElementById('wall').innerHTML = CLIENTS.map(function (n, i) {
   if (!n) return '';
-  return '<div title="' + esc(n) + '"><img src="assets/clients/c' + String(i).padStart(2, '0') + '.png" alt="' + esc(n) + '" loading="lazy"></div>';
+  var ours = OURS.indexOf(n) >= 0;
+  return '<div' + (ours ? ' class="ours"' : '') + ' title="' + esc(n) + (ours ? ' · logo by Promake' : '') + '"><img src="assets/clients/c' + String(i).padStart(2, '0') + '.png" alt="' + esc(n) + '" loading="lazy"></div>';
 }).join('');
 
 var shapesIdx = ['border-radius:50%', '', 'clip-path:polygon(0 100%,50% 0,100% 100%)'];
