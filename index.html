@@ -343,6 +343,19 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .js .rv:not(.in), .js .shot.rv:not(.in) img { transform: none; } }
 
+/* Logos we designed */
+.marks { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.marks figure { margin: 0; display: grid; grid-template-rows: auto auto; background: #fff; color: #0b0b0b; }
+.marks .m-img { aspect-ratio: 5 / 4; display: grid; place-items: center; border-bottom: 2px solid var(--line); overflow: hidden; }
+.marks img { width: 100%; height: 100%; object-fit: contain; transition: transform .4s cubic-bezier(.3,1.4,.5,1); }
+.marks figure:hover img { transform: scale(1.08); }
+.marks figcaption { padding: 14px 16px; display: grid; gap: 4px; background: var(--bg); color: var(--fg); }
+.marks figcaption b { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -.01em; }
+@media (max-width: 860px) { .marks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.wall div { position: relative; }
+.wall div.ours::after { content: ""; position: absolute; top: 6px; right: 6px; width: 10px; height: 10px; background: var(--accent); }
+.legend { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 14px; color: var(--muted); }
+
 /* Contact band */
 .invert { background: var(--fg); color: var(--bg); border-bottom: 0; }
 .invert .label { color: color-mix(in srgb, var(--bg) 60%, var(--fg)); }
@@ -408,8 +421,8 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
 
   <div class="wrap" style="padding-bottom:clamp(40px,6vw,72px)">
     <div class="ruled stats">
-      <div><span class="count" data-count="39">39</span><span class="label">Brands designed</span></div>
-      <div><span class="count" data-count="9">9</span><span class="label">Stories to read</span></div>
+      <div><span class="count" data-count="7">7</span><span class="label">Brand stories</span></div>
+      <div><span class="count" data-count="50" data-suffix="+">50+</span><span class="label">Brands</span></div>
       <div><span class="count" data-count="6">6</span><span class="label">Disciplines in-house</span></div>
       <div><span class="count" data-count="4">4</span><span class="label">Steps, no mystery</span></div>
     </div>
@@ -430,10 +443,10 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
       </div>
       <div class="ruled feat">
         <button data-story="humann"><div class="img"><img src="assets/work/humann-hero.jpg" alt="Humann brand photo with logo" loading="lazy"></div><div class="cap"><span class="label">Mental health care · Branding</span><b>Humann</b></div></button>
-        <button data-story="zynq"><div class="img"><img src="assets/work/zynq-bag.jpg" alt="ZYNQ orange shopping bag" loading="lazy"></div><div class="cap"><span class="label">Women's clothing · Branding</span><b>ZYNQ</b></div></button>
+        <button data-story="elan"><div class="img"><img src="assets/work/elan-box.jpg" alt="Elan amenities boxes, slippers and kit" loading="lazy"></div><div class="cap"><span class="label">Hospitality · Branding</span><b>Elan Hospitality</b></div></button>
         <button data-story="vitomin"><div class="img"><img src="assets/work/vitomin-hero.jpg" alt="Vitomin logo over oranges" loading="lazy"></div><div class="cap"><span class="label">Health drink · Packaging</span><b>Vitomin</b></div></button>
       </div>
-      <div class="actions" style="margin-top:28px"><a class="btn ghost" href="#work">All 9 stories →</a></div>
+      <div class="actions" style="margin-top:28px"><a class="btn ghost" href="#work">All 7 stories →</a></div>
     </div>
   </section>
 
@@ -453,9 +466,10 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
     <div class="wrap sec">
       <div class="sec-head">
         <span class="label"><span class="sq"></span>Our clientele</span>
-        <h2>39 brands that trusted us to get weird.</h2>
+        <h2>Some of the 50+ brands that trusted us to get weird.</h2>
       </div>
       <div class="ruled wall" id="wall"></div>
+      <p class="legend"><span class="sq"></span>Logo designed by Promake</p>
     </div>
   </section>
 
@@ -481,6 +495,20 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
   <section style="border-top:0">
     <div class="wrap" style="padding-bottom:clamp(40px,6vw,72px)">
       <ul class="index" id="work-index"></ul>
+    </div>
+  </section>
+  <section>
+    <div class="wrap sec">
+      <div class="sec-head">
+        <span class="label"><span class="sq"></span>Logos we designed</span>
+        <h2>Marks made in our studio.</h2>
+      </div>
+      <div class="ruled marks">
+        <figure><div class="m-img"><img src="assets/clients/c42.png" alt="Green Events logo" loading="lazy"></div><figcaption><b>Green Events</b><span class="label">Events · Logo</span></figcaption></figure>
+        <figure><div class="m-img"><img src="assets/clients/c41.png" alt="The Fourth Room logo" loading="lazy"></div><figcaption><b>The Fourth Room</b><span class="label">Community space · Logo</span></figcaption></figure>
+        <figure><div class="m-img"><img src="assets/clients/c48.png" alt="Voice of Ray logo" loading="lazy"></div><figcaption><b>Voice of Ray</b><span class="label">Logo design</span></figcaption></figure>
+        <figure><div class="m-img"><img src="assets/clients/c43.png" alt="Yabs Photobooths logo" loading="lazy"></div><figcaption><b>Yabs Photobooths</b><span class="label">Photobooths · Logo</span></figcaption></figure>
+      </div>
     </div>
   </section>
   <div id="stories"></div>
@@ -555,7 +583,7 @@ form .btn:hover { box-shadow: 3px 3px 0 var(--bg); }
 
   <div class="wrap quote">
     <p>“Your brand is the single most important investment you can make in your business.”</p>
-    <span class="label">Steve Jobs, co-founder of Apple</span>
+    <span class="label">Steve Forbes</span>
   </div>
 </div>
 
@@ -718,13 +746,6 @@ var STORIES = [
     logo: 'A typography-based logo. The final two letters, the “n” and “n”, become two people: a therapist and a patient, connected through Humann.',
     parts: [['Two figures', 'The dots above the last two letters turn them into people standing side by side.'], ['The gradient', 'The letters start in deep orange, for a restless mind, and lighten in the final letter as the mind heals.'], ['The tagline', '“Mindful matches, holistic healing” sits on the same baseline, so the promise reads as part of the name.']],
     colours: [['#EE6623', 'Coral orange', 'The chaotic mind. Warm and urgent, never cold or clinical.'], ['#F49148', 'Melon orange', 'The improved state. Lighter and calmer, used for the final letter.'], ['#FFFFFF', 'White', 'Space and quiet. The brand stays modern and minimal.']] },
-  { id: 'zynq', name: 'ZYNQ', sector: "Women's clothing", scope: 'Branding · Influencer marketing · Digital marketing', q: 'Why one loud orange?',
-    imgs: [['zynq-bag.jpg', 'ZYNQ orange shopping bag'], ['zynq-store.jpg', 'ZYNQ in-store branding'], ['zynq-posters.jpg', 'ZYNQ social posters made with AI image manipulation']],
-    lead: 'A fashion store for women who want to be noticed, without the price of a luxury label.',
-    story: 'ZYNQ needed to stand out in busy shopping streets and on crowded social feeds. We built the whole brand around one colour and one bold word, then carried it from the shop floor to tags, bags, uniforms and campaigns.',
-    logo: 'Four tall, condensed capitals. The narrow letters stack up like a fashion headline and stay readable on a hang tag, a flag or a phone screen.',
-    parts: [['Condensed capitals', 'Tall and confident, like the cover line of a fashion magazine.'], ['Four letters', 'Short enough to print huge on a bag or tiny on a label.'], ['The Q', 'Its tail gives the word a flick of movement at the end.']],
-    colours: [['#F36423', 'ZYNQ orange', 'One colour that owns the brand. Seen from across a mall, it can only be ZYNQ.'], ['#FFFFFF', 'White', 'Lets the orange shout. Used for type on orange surfaces.'], ['#0B0B0B', 'Black', 'For campaign type and price tags where clarity matters most.']] },
   { id: 'vitomin', name: 'Vitomin', sector: 'Health drink', scope: 'Packaging design', q: 'Why is the “o” a capsule?',
     imgs: [['vitomin-hero.jpg', 'Vitomin logo over fresh oranges'], ['vitomin-bottle.jpg', 'Vitomin supplement bottle'], ['vitomin-pack.jpg', 'Vitomin vitamin C pack with orange slices']],
     lead: 'A vitamin C drink that wanted to look as fresh as the fruit it comes from.',
@@ -766,17 +787,12 @@ var STORIES = [
     story: 'Vanam means forest in Tamil. The re-brand made the Tamil wordmark the hero and gave every grain its own soft pack colour, so shoppers can find their millet at a glance.',
     logo: 'The name is written in Tamil script with a single leaf rising from it. The leaf says organic; the script says rooted in local tradition.',
     parts: [['Tamil script', 'Made for the people who grew up with these grains.'], ['The leaf', 'One shape that says natural and growing.'], ['The elephant', 'A gentle giant of the forest, printed big on every pack.']],
-    colours: [['#223C2E', 'Forest', 'Deep and earthy. The colour of the wordmark.'], ['#1E8C4E', 'Leaf', 'Fresh growth, used for the leaf and highlights.'], ['#F2C9B8', 'Grain tones', 'Each grain gets a soft pack colour of its own.']] },
-  { id: 'vtsr', name: 'VTSR Silks', sector: 'Textile, family retail', scope: 'Branding · Influencer marketing · Digital marketing', q: 'Why a flower of eight petals?',
-    imgs: [['vtsr-posters.jpg', 'VTSR Silks campaign posters'], ['vtsr-billboards.jpg', 'VTSR Silks billboards']],
-    lead: 'A family silk store in Tenkasi that dresses every generation for every festival.',
-    story: 'VTSR Silks wanted to be the first name families think of for weddings and festivals. We built the brand and ran the campaigns: festival posters, billboards and influencer collaborations across the season.',
-    logo: 'A symmetrical eight-petal motif, like a pattern woven into silk, beside a clean wordmark in English and Tamil.',
-    parts: [['The motif', 'Inspired by woven silk patterns and kolam designs.'], ['Symmetry', 'Balance and tradition, the feeling of a family business.'], ['Two languages', 'English for reach, Tamil for heart.']],
-    colours: [['#1C9354', 'Silk green', 'Prosperity and new beginnings, and rare among red-heavy silk brands.'], ['#C9A227', 'Zari gold', 'The gold thread in a silk sari border.'], ['#B3122E', 'Festival red', 'Used in campaigns for weddings and Deepavali.']] }
+    colours: [['#223C2E', 'Forest', 'Deep and earthy. The colour of the wordmark.'], ['#1E8C4E', 'Leaf', 'Fresh growth, used for the leaf and highlights.'], ['#F2C9B8', 'Grain tones', 'Each grain gets a soft pack colour of its own.']] }
 ];
 
-var CLIENTS = ['Yasen Yarns','Anandam Law College','Joy Stories','Play Monk','The Barbeque Lounge','Kamatchi Mess','iblinds','Patterns Living','Virtus Book of World Records','TNCPEA','Bharani Express','VTSR Silks','One Touch Solutionss','Veetula Vishesham','Raghavendra Matric School','Luxus','Vanam','abm Tours & Travels','Marutham Supermarket','The Fabriq Store','Himavath','Ezone Events & Learning','Softgel Healthcare','Acquired Edge','Asian Association of Oral and Maxillofacial Surgeons','Impress','Planet Education','Srikamatchi Medical Centre','ZYNQ','Vitomin','Humann','IGJ Women’s College','Elan Hospitality','Tamil Nadu Tourism','Evoke Media',null,'Harting','Vestas','Impreus','IAF'];
+var CLIENTS = ['Yasen Yarns','Anandam Law College','Joy Stories','Play Monk','The Barbeque Lounge','Kamatchi Mess','iblinds','Patterns Living','Virtus Book of World Records','TNCPEA','Bharani Express',null,'One Touch Solutionss','Veetula Vishesham','Raghavendra Matric School','Luxus','Vanam','abm Tours & Travels','Marutham Supermarket','The Fabriq Store','Himavath','Ezone Events & Learning','Softgel Healthcare','Acquired Edge','Asian Association of Oral and Maxillofacial Surgeons','Impress',null,'Srikamatchi Medical Centre',null,'Vitomin','Humann','IGJ Women’s College','Elan Hospitality','Tamil Nadu Tourism','Evoke Media',null,'Harting','Vestas','Impreus','IAF','IK Classiva','The Fourth Room','Green Events','Yabs Photobooths','Craft Workshops Chennai','New Freezing Point','Around Safe Nets','Proodle','Voice of Ray'];
+
+var OURS = ['Green Events', 'The Fourth Room', 'Voice of Ray', 'Yabs Photobooths', 'Humann'];
 
 var POSTS = [
   { t: 'Contrast: why black and white never gets old', tag: 'Colour', art: 'contrast',
@@ -813,7 +829,8 @@ function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&
 
 document.getElementById('wall').innerHTML = CLIENTS.map(function (n, i) {
   if (!n) return '';
-  return '<div title="' + esc(n) + '"><img src="assets/clients/c' + String(i).padStart(2, '0') + '.png" alt="' + esc(n) + '" loading="lazy"></div>';
+  var ours = OURS.indexOf(n) >= 0;
+  return '<div' + (ours ? ' class="ours"' : '') + ' title="' + esc(n) + (ours ? ' · logo by Promake' : '') + '"><img src="assets/clients/c' + String(i).padStart(2, '0') + '.png" alt="' + esc(n) + '" loading="lazy"></div>';
 }).join('');
 
 var shapesIdx = ['border-radius:50%', '', 'clip-path:polygon(0 100%,50% 0,100% 100%)'];
@@ -928,7 +945,7 @@ var LESSONS = {
   },
   font: {
     grotesk: '<b>Wide, heavy grotesks feel bold and loud.</b> Wide letters take up space and demand attention. This is the voice of our own headlines.',
-    condensed: '<b>Condensed capitals feel urgent.</b> Narrow letters fit more words into a tall space, like a newspaper headline or a fashion label such as ZYNQ.',
+    condensed: '<b>Condensed capitals feel urgent.</b> Narrow letters fit more words into a tall space, like a newspaper headline or a fashion label.',
     humanist: '<b>Friendly sans faces feel approachable.</b> Softer letter shapes and normal case read like a conversation rather than a shout.',
     mono: '<b>Monospaced type feels technical.</b> Every letter takes the same width, like a typewriter or code. Good for a nerdy, honest voice.'
   }
@@ -1028,7 +1045,7 @@ if ('IntersectionObserver' in window) {
       if (!e.isIntersecting) return; co.unobserve(e.target);
       var el = e.target, end = +el.dataset.count, t0 = performance.now();
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      (function tick(t) { var p = Math.min(1, (t - t0) / 900); el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); })(t0);
+      (function tick(t) { var p = Math.min(1, (t - t0) / 900); el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))) + (el.dataset.suffix || ''); if (p < 1) requestAnimationFrame(tick); })(t0);
     });
   });
   document.querySelectorAll('[data-count]').forEach(function (el) { co.observe(el); });
