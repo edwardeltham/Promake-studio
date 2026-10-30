@@ -370,13 +370,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .ps-text { background: var(--fg); color: var(--bg); display: grid; align-content: center; gap: 22px; padding: 40px clamp(20px, 4vw, 56px) 96px max(24px, calc((100vw - var(--max)) / 2 + 24px)); min-width: 0; }
 .ps-text .label { color: color-mix(in srgb, var(--bg) 60%, var(--fg)); display: flex; gap: 12px; align-items: center; }
 .ps-text .num { font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: 14px; color: var(--accent); letter-spacing: .04em; }
-.ps-name { margin: 0; font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: clamp(40px, 5.6vw, 84px); line-height: .9; letter-spacing: -.04em; text-wrap: balance; }
+.ps-name { max-width: 100%; overflow-wrap: normal; margin: 0; font-family: var(--display); font-weight: 900; font-stretch: 120%; font-size: clamp(40px, 5.6vw, 84px); line-height: .9; letter-spacing: -.04em; text-wrap: balance; }
 .ps-hook { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(20px, 2vw, 28px); line-height: 1.15; letter-spacing: -.015em; max-width: 20ch; }
 .ps-hook span { color: var(--accent); }
 .ps-text .btn { justify-self: start; background: var(--accent); border-color: var(--accent); color: #0b0b0b; }
 .ps-text .btn:hover { box-shadow: 4px 4px 0 var(--bg); }
 .ps-img { position: relative; overflow: hidden; background: var(--tile); border-left: 2px solid var(--line); }
-.ps-img img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); transition: transform 7s linear; }
+.ps-img::before { content: ""; position: absolute; inset: -40px; background: var(--bgi) center / cover; filter: blur(28px) brightness(.8) saturate(1.1); }
+.ps-img img { position: relative; width: 100%; height: 100%; object-fit: contain; transform: scale(1.06); transition: transform 7s linear; }
 .slide.on .ps-img img { transform: scale(1); }
 .ps-img::after { content: ""; position: absolute; width: 22%; aspect-ratio: 1; right: -6%; top: -6%; border-radius: 50%; background: var(--accent); transform: scale(0); transition: transform .7s cubic-bezier(.3,1.5,.5,1) .6s; }
 .slide.on .ps-img::after { transform: scale(1); }
@@ -406,7 +407,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   .ps { grid-template-columns: 1fr; grid-template-rows: 42% 1fr; }
   .ps-img { order: -1; border-left: 0; border-bottom: 2px solid var(--line); }
   .ps-text { align-content: start; padding: 28px max(16px, env(safe-area-inset-left, 0px)) 90px; gap: 16px; }
-  .dots button { width: 20px; }
+  .dots { flex-wrap: nowrap; gap: 4px; flex: 1; min-width: 0; } .dots button { width: auto; flex: 1 1 0; max-width: 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .slide.on { transition: none; }
@@ -1170,7 +1171,7 @@ document.getElementById('blog-filter').addEventListener('click', function (e) {
       '<h2 class="ps-name">' + esc(s.name) + '</h2>' +
       '<p class="ps-hook">' + esc(q.slice(0, -2).join(' ')) + ' <span>' + esc(q.slice(-2).join(' ')) + '</span></p>' +
       '<button class="btn" type="button" data-story="' + s.id + '">Read the story →</button></div>' +
-      '<div class="ps-img"><img src="assets/work/' + s.imgs[0][0] + '" alt="' + esc(s.imgs[0][1]) + '"' + (i > 1 ? ' loading="lazy"' : '') + '></div></div>';
+      '<div class="ps-img" style="--bgi:url(assets/work/' + s.imgs[0][0] + ')"><img src="assets/work/' + s.imgs[0][0] + '" alt="' + esc(s.imgs[0][1]) + '"' + (i > 1 ? ' loading="lazy"' : '') + '></div></div>';
     el.setAttribute('aria-hidden', 'true');
     slider.insertBefore(el, slider.querySelector('.slider-ui'));
   });
@@ -1212,6 +1213,25 @@ document.getElementById('blog-filter').addEventListener('click', function (e) {
   slider.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
   slider.addEventListener('touchend', function (e) { if (sx === null) return; var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1)); sx = null; });
   document.addEventListener('visibilitychange', function () { if (document.hidden) clearTimeout(timer); else schedule(); });
+  /* Shrink long brand names until every word fits and it stays within three lines */
+  function fitNames() {
+    slider.querySelectorAll('.ps-name').forEach(function (el) {
+      el.style.fontSize = '';
+      var fs = parseFloat(getComputedStyle(el).fontSize), lh = 0.92;
+      var r = document.createRange();
+      function tooWide() {
+        // widest rendered line vs the box, with a small safety margin for glyph overhang
+        r.selectNodeContents(el);
+        var box = el.getBoundingClientRect(), w = 0;
+        [].forEach.call(r.getClientRects(), function (c) { w = Math.max(w, c.right - box.left); });
+        return w > el.clientWidth * 0.95 || el.scrollWidth > el.clientWidth;
+      }
+      while (fs > 24 && (tooWide() || el.offsetHeight > fs * lh * 3.2)) { fs -= 2; el.style.fontSize = fs + 'px'; }
+    });
+  }
+  fitNames();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
+  var rt; addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(fitNames, 150); });
   paint(); schedule();
 })();
 
